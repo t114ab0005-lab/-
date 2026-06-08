@@ -18,7 +18,6 @@ const INITIAL_TASKS = [
     posterName: "王小明 (大一生)",
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=xiaoming",
     status: "available",
-    // 新增：速配屬性
     matchTags: ["學術", "文書"],
     timeSlots: ["Tue-evening", "Thu-evening", "Sat-afternoon"]
   },
@@ -213,6 +212,11 @@ const INITIAL_USER = {
   avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=placeholder"
 };
 
+// 預填的 Demo 體驗帳號 (已重置為空資料)
+const DEMO_USER = {
+  ...INITIAL_USER
+};
+
 const AVATAR_OPTIONS = [
   "https://api.dicebear.com/7.x/adventurer/svg?seed=GuanYu",
   "https://api.dicebear.com/7.x/adventurer/svg?seed=Sophia",
@@ -240,31 +244,29 @@ let state = {
     school: 'all',
     sortBy: 'newest'
   },
-  // 新增：速配選取狀態
-  matchSelectedSlots: [], // 例如：['Mon-morning', 'Tue-afternoon']
-  matchSelectedTags: []   // 例如：['跑腿', '體力活']
+  matchSelectedSlots: [],
+  matchSelectedTags: [],
+  isLoggedIn: false
 };
 
 // --- 初始化應用 ---
 function initApp() {
+  // 檢查登入狀態
+  const loginFlag = localStorage.getItem('unitask_is_logged_in');
   const storedTasks = localStorage.getItem('unitask_tasks');
   const storedUser = localStorage.getItem('unitask_user');
 
-  // 若偵測到舊的測試帳號 (陳冠宇)，則進行強制重設，使新空狀態與速配欄位生效
-  if (storedUser && JSON.parse(storedUser).name === "陳冠宇") {
-    localStorage.removeItem('unitask_user');
-    localStorage.removeItem('unitask_tasks');
-    state.user = { ...INITIAL_USER };
-    state.tasks = [...INITIAL_TASKS];
+  // 初始化任務數據
+  state.tasks = storedTasks ? JSON.parse(storedTasks) : JSON.parse(JSON.stringify(INITIAL_TASKS));
+
+  if (loginFlag === 'true') {
+    state.isLoggedIn = true;
+    state.user = storedUser ? JSON.parse(storedUser) : JSON.parse(JSON.stringify(DEMO_USER));
+    document.getElementById('login-screen').style.display = 'none';
   } else {
-    // 檢查已存的任務是否有 matchTags。若無（舊資料升級），則強制更新任務
-    let tasksLoaded = storedTasks ? JSON.parse(storedTasks) : null;
-    if (tasksLoaded && (!tasksLoaded[0] || !tasksLoaded[0].matchTags)) {
-      tasksLoaded = null;
-      localStorage.removeItem('unitask_tasks');
-    }
-    state.tasks = tasksLoaded ? tasksLoaded : [...INITIAL_TASKS];
-    state.user = storedUser ? JSON.parse(storedUser) : { ...INITIAL_USER };
+    state.isLoggedIn = false;
+    state.user = JSON.parse(JSON.stringify(INITIAL_USER));
+    document.getElementById('login-screen').style.display = 'flex';
   }
 
   // 渲染側邊欄與初始頁面
@@ -275,6 +277,180 @@ function initApp() {
   // 綁定各類事件監聽器
   bindEvents();
   setupDemoPublishData();
+}
+
+// --- 登入與登出處理邏輯 ---
+
+function showRegisterForm() {
+  document.getElementById('login-form-box').style.display = 'none';
+  document.getElementById('register-form-box').style.display = 'block';
+  document.getElementById('login-modal-title').innerText = '註冊學生帳號';
+}
+
+function showLoginForm() {
+  document.getElementById('register-form-box').style.display = 'none';
+  document.getElementById('login-form-box').style.display = 'block';
+  document.getElementById('login-modal-title').innerText = '學生接案登入';
+}
+
+// 驗證是否為學生信箱 (提示用途)
+function checkStudentEmail(email) {
+  return email.toLowerCase().endsWith('.edu.tw');
+}
+
+function performLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+
+  if (!email || !password) {
+    showToast("請填寫所有欄位！", "danger");
+    return;
+  }
+
+  // 提示非學術信箱，但仍放行（以利測試體驗）
+  if (!checkStudentEmail(email)) {
+    showToast("提示：建議使用學校信箱 (.edu.tw) 進行註冊，以享有完整大學生專屬權益！", "warning");
+  }
+
+  // 每次登入時強制清空先前可能殘留的任務進度與快取
+  localStorage.removeItem('unitask_tasks');
+  localStorage.removeItem('unitask_user');
+  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+
+  // 若輸入 demo 帳號，載入空白的初始資料，並預設信箱對應名稱以利體驗
+  if (email === "student@ntu.edu.tw") {
+    state.user = { 
+      ...JSON.parse(JSON.stringify(INITIAL_USER)),
+      name: "體驗學生",
+      university: "國立臺灣大學"
+    };
+  } else {
+    state.user = {
+      ...JSON.parse(JSON.stringify(INITIAL_USER)),
+      name: email.split('@')[0],
+      university: "學生體驗學校"
+    };
+  }
+
+  saveStateToStorage();
+  localStorage.setItem('unitask_is_logged_in', 'true');
+  state.isLoggedIn = true;
+
+  // 隱藏登入畫面
+  const loginOverlay = document.getElementById('login-screen');
+  loginOverlay.style.opacity = '0';
+  setTimeout(() => {
+    loginOverlay.style.display = 'none';
+    loginOverlay.style.opacity = '1';
+  }, 300);
+
+  // 刷新所有頁面狀態與大廳
+  renderSidebarBrief();
+  renderStats();
+  switchTab('lobby');
+  showToast(`歡迎回來！親愛的 ${state.user.name} 同學。`, "success");
+}
+
+function performRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const school = document.getElementById('reg-school').value.trim();
+  const major = document.getElementById('reg-major').value.trim();
+  const year = document.getElementById('reg-year').value;
+  const password = document.getElementById('reg-password').value;
+
+  if (!name || !email || !school || !major || !password) {
+    showToast("請填寫所有必填欄位！", "danger");
+    return;
+  }
+
+  if (!checkStudentEmail(email)) {
+    showToast("提示：建議使用學校信箱 (.edu.tw) 進行註冊，以享有完整大學生專屬權益！", "warning");
+  }
+
+  // 隨機選一個頭像
+  const randomAvatar = AVATAR_OPTIONS[Math.floor(Math.random() * AVATAR_OPTIONS.length)];
+
+  // 建立全新學生帳戶資料
+  const newUser = {
+    name: name,
+    university: school,
+    major: major,
+    year: year,
+    rating: 5.0,
+    completedCount: 0,
+    earnings: 0,
+    skills: [],
+    bio: "尚未填寫個人簡介，請點擊下方「編輯個人資料」進行設定。",
+    avatar: randomAvatar
+  };
+
+  state.user = newUser;
+  saveStateToStorage();
+  localStorage.setItem('unitask_is_logged_in', 'true');
+  state.isLoggedIn = true;
+
+  // 隱藏登入畫面
+  const loginOverlay = document.getElementById('login-screen');
+  loginOverlay.style.opacity = '0';
+  setTimeout(() => {
+    loginOverlay.style.display = 'none';
+    loginOverlay.style.opacity = '1';
+  }, 300);
+
+  renderSidebarBrief();
+  renderStats();
+  switchTab('lobby');
+  showToast("註冊成功！歡迎加入 UniTask 大學生互助社群。", "success");
+}
+
+// 快速體驗訪客登入
+function quickGuestLogin() {
+  // 每次訪客登入時，強制重置清空所有的接案進度與快取
+  localStorage.removeItem('unitask_tasks');
+  localStorage.removeItem('unitask_user');
+  
+  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+  state.user = JSON.parse(JSON.stringify(INITIAL_USER));
+  
+  saveStateToStorage();
+  localStorage.setItem('unitask_is_logged_in', 'true');
+  state.isLoggedIn = true;
+
+  const loginOverlay = document.getElementById('login-screen');
+  loginOverlay.style.opacity = '0';
+  setTimeout(() => {
+    loginOverlay.style.display = 'none';
+    loginOverlay.style.opacity = '1';
+  }, 300);
+
+  renderSidebarBrief();
+  renderStats();
+  switchTab('lobby');
+  showToast("已使用學生訪客身份快速登入！", "success");
+}
+
+function handleLogout() {
+  // 清除登入標籤
+  localStorage.setItem('unitask_is_logged_in', 'false');
+  state.isLoggedIn = false;
+  state.user = JSON.parse(JSON.stringify(INITIAL_USER));
+
+  // 顯示登入畫面並重置首頁
+  const loginOverlay = document.getElementById('login-screen');
+  loginOverlay.style.display = 'flex';
+  
+  // 清除快取中的狀態，重置回初始任務與用戶
+  localStorage.removeItem('unitask_tasks');
+  localStorage.removeItem('unitask_user');
+  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+
+  renderSidebarBrief();
+  renderStats();
+  
+  showToast("您已成功安全登出系統。", "info");
 }
 
 // --- 渲染與更新介面 ---
@@ -288,8 +464,8 @@ function renderSidebarBrief() {
 function renderStats() {
   const availableCount = state.tasks.filter(t => t.status === 'available').length;
   const activeCount = state.tasks.filter(t => t.status === 'ongoing').length;
-  const completedCount = state.user.completedCount;
-  const totalEarnings = state.user.earnings;
+  const completedCount = state.user.completedCount || 0;
+  const totalEarnings = state.user.earnings || 0;
 
   document.getElementById('stat-available').innerText = availableCount;
   document.getElementById('stat-active').innerText = activeCount;
@@ -340,7 +516,6 @@ function renderTasksList() {
   });
 }
 
-// 輔助：生成任務卡片
 function createTaskCard(task, showStatusBadge = false) {
   const isHighReward = task.reward >= 1500;
   const card = document.createElement('div');
@@ -396,12 +571,12 @@ function renderStatusBadge(status) {
 
 // 4. 渲染個人檔案頁面
 function renderProfileSection() {
-  document.getElementById('profile-avatar').src = state.user.avatar;
-  document.getElementById('profile-name').innerText = state.user.name;
-  document.getElementById('profile-identity').innerText = `${state.user.university} · ${state.user.major} (${state.user.year})`;
-  document.getElementById('profile-rating').innerHTML = `<i class="fa-solid fa-star" style="color: #fbbf24; margin-right: 2px;"></i> ${state.user.rating}`;
-  document.getElementById('profile-stat-completed').innerText = state.user.completedCount;
-  document.getElementById('profile-stat-earnings').innerText = `$${state.user.earnings}`;
+  document.getElementById('profile-avatar').src = state.user.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=placeholder';
+  document.getElementById('profile-name').innerText = state.user.name || '未設定姓名';
+  document.getElementById('profile-identity').innerText = `${state.user.university || '未設定學校'} · ${state.user.major || '未設定科系'} (${state.user.year || '大一'})`;
+  document.getElementById('profile-rating').innerHTML = `<i class="fa-solid fa-star" style="color: #fbbf24; margin-right: 2px;"></i> ${state.user.rating || '5.0'}`;
+  document.getElementById('profile-stat-completed').innerText = state.user.completedCount || 0;
+  document.getElementById('profile-stat-earnings').innerText = `$${(state.user.earnings || 0).toLocaleString()}`;
   document.getElementById('profile-bio').innerText = state.user.bio || "此使用者尚未填寫簡介。";
 
   // 技能 Tags
@@ -538,24 +713,50 @@ function switchTab(tabId) {
     headerDesc.innerText = "檢視並編輯你的個人學生認證履歷、信譽評價與接案明細。";
     searchWrapper.style.display = 'none';
     filterPanel.style.display = 'none';
+
+    // 檢查是否需要重設子分頁狀態為預設的「歷史紀錄」
+    if (!state.preventProfileTabReset) {
+      state.activeProfileTab = 'history';
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        if (btn.getAttribute('data-subtab') === 'history') {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+    state.preventProfileTabReset = false; // 消耗旗標
     renderProfileSection();
   }
 
   closeAllModals();
 }
 
+// 快捷導覽：切換至個人資料並開啟指定子分頁（歷史紀錄/進行中工作）
+function navigateToProfileTab(subtabId) {
+  state.preventProfileTabReset = true; // 設下旗標，阻止 switchTab 重設子頁面
+  switchTab('profile');
+  
+  state.activeProfileTab = subtabId;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    if (btn.getAttribute('data-subtab') === subtabId) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  renderProfileTabsList();
+}
+
 // --- 一鍵空檔速配邏輯 ---
 
 function resetQuickMatchUI() {
-  // 清空選取狀態
   state.matchSelectedSlots = [];
   state.matchSelectedTags = [];
 
-  // 清空 UI 選取狀態
   document.querySelectorAll('.calendar-cell').forEach(cell => cell.classList.remove('selected'));
   document.querySelectorAll('.match-tag-btn').forEach(btn => btn.classList.remove('active'));
 
-  // 清空速配結果
   document.getElementById('quick-match-results').innerHTML = `
     <div class="empty-state" style="padding: 2rem;">
       <i class="fa-solid fa-calendar-days" style="font-size: 2.5rem;"></i>
@@ -612,10 +813,6 @@ function runQuickMatch() {
     return;
   }
 
-  // 速配過濾邏輯：任務必須是 available 狀態
-  // 並且滿足：
-  // 1. 若選取了時段，任務適用時段必須包含至少一個所選時段
-  // 2. 若選取了標籤，任務速配標籤必須包含至少一個所選標籤
   const matched = state.tasks.filter(task => {
     if (task.status !== 'available') return false;
 
@@ -643,7 +840,6 @@ function runQuickMatch() {
     return;
   }
 
-  // 渲染匹配結果為大廳格式的網格
   const resultsGrid = document.createElement('div');
   resultsGrid.className = 'tasks-grid';
   resultsGrid.style.width = '100%';
@@ -663,17 +859,15 @@ function setupDemoPublishData() {
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  // 格式化 YYYY-MM-DD
   const formatDigit = (d) => d < 10 ? '0' + d : d;
   const tomorrowStr = `${tomorrow.getFullYear()}-${formatDigit(tomorrow.getMonth() + 1)}-${formatDigit(tomorrow.getDate())}`;
 
-  // 預填假資料
   document.getElementById('demo-title').value = "代拿期末專題報告並列印 (微積分與物理組)";
   document.getElementById('demo-category').value = "delivery";
   document.getElementById('demo-reward').value = 350;
   document.getElementById('demo-est-time').value = "1 小時內";
   document.getElementById('demo-deadline').value = tomorrowStr;
-  document.getElementById('demo-desc').value = "期末大魔王專題報告需要印出成實體紙本！請幫忙到椰林大道的影印店領取我的報告，並幫忙送到工綜大樓 302 教室。影印費用已付清，直接報名字「陳冠宇」拿取即可。椰林大道與工綜大樓大約步行 10 分鐘，希望能在明天下午兩點前送到。完成後請記得拍照回傳。";
+  document.getElementById('demo-desc').value = "期末大魔王專題報告需要印出成實體紙本！請幫忙到椰林大道的影印店領取我的報告，並幫忙送到工綜大樓 302 教室。影印費用已付清，直接報名字「林小宇」拿取即可。椰林大道與工綜大樓大約步行 10 分鐘，希望能在明天下午兩點前送到。完成後請記得拍照回傳。";
 }
 
 function handleDemoPublish(e) {
@@ -708,25 +902,21 @@ function handleDemoPublish(e) {
     posterName: state.user.name === "未設定姓名" ? "匿名學生" : state.user.name,
     posterAvatar: state.user.avatar,
     status: "available",
-    // 為 Demo 任務隨機分派速配參數，便於測試速配功能
     matchTags: ["跑腿", "體力活"],
     timeSlots: ["Mon-afternoon", "Tue-afternoon", "Wed-afternoon", "Sat-afternoon"]
   };
 
-  // 置頂放入任務清單
   state.tasks.unshift(newDemoTask);
   saveStateToStorage();
 
-  // 觸發「模擬發布成功」Toast 回饋
   showToast("模擬發布成功！已自動置頂於任務大廳。", "success");
 
-  // 自動切換到任務大廳分頁
   setTimeout(() => {
     switchTab('lobby');
   }, 500);
 }
 
-// --- 任務詳情彈窗處理 (同前) ---
+// --- 任務詳情彈窗處理 ---
 
 function openDetailModal(taskId) {
   const task = state.tasks.find(t => t.id === taskId);
@@ -792,7 +982,7 @@ function handleAcceptTask(taskId) {
 
   renderStats();
   if (state.activeTab === 'lobby') renderTasksList();
-  if (state.activeTab === 'quick-match') runQuickMatch(); // 若在速配畫面接案，重新渲染速配
+  if (state.activeTab === 'quick-match') runQuickMatch();
   
   closeAllModals();
   showToast(`成功接受任務：${task.title}！已移至「進行中工作」。`, 'success');
@@ -829,7 +1019,7 @@ function handleSimulateComplete(taskId) {
   showToast(`案主已核准！$${task.reward} 已撥入您的帳戶！`, 'success');
 }
 
-// --- 個人檔案編輯處理 ---
+// --- 個人檔案編輯與設定 ---
 
 function openEditProfileModal() {
   const overlay = document.getElementById('edit-profile-modal');
@@ -891,7 +1081,7 @@ function handleSaveProfile(e) {
   showToast("個人資料已成功更新！", "success");
 }
 
-// --- 通用輔助 ---
+// --- 通用與資料儲存 ---
 
 function closeAllModals() {
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -928,7 +1118,7 @@ function showToast(message, type = 'info') {
   }, 4000);
 }
 
-// --- 綁定事件監聽 ---
+// --- 事件處理與監聽 ---
 function bindEvents() {
   // 1. 導覽列點擊
   document.querySelectorAll('.nav-item').forEach(item => {
@@ -986,14 +1176,15 @@ function bindEvents() {
     });
   }
 
-  // 6. 個人資料分頁標籤 (已完成 / 進行中)
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('tab-btn')) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      e.target.classList.add('active');
-      state.activeProfileTab = e.target.getAttribute('data-subtab');
+  // 6. 個人資料分頁標籤 (已完成 / 進行中) - 採用直接綁定與更穩健的事件判定
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.activeProfileTab = btn.getAttribute('data-subtab');
       renderProfileTabsList();
-    }
+    });
   });
 
   // 7. 一鍵空檔速配：時間格與標籤多選綁定
@@ -1016,7 +1207,29 @@ function bindEvents() {
     demoPublishForm.addEventListener('submit', handleDemoPublish);
   }
 
-  // 9. 彈窗背景與關閉按鈕點擊
+  // 9. 登入/註冊表單事件與分頁切換
+  const switchRegBtn = document.getElementById('switch-to-register');
+  if (switchRegBtn) switchRegBtn.addEventListener('click', showRegisterForm);
+
+  const switchLogBtn = document.getElementById('switch-to-login');
+  if (switchLogBtn) switchLogBtn.addEventListener('click', showLoginForm);
+
+  const loginForm = document.getElementById('email-login-form');
+  if (loginForm) loginForm.addEventListener('submit', performLogin);
+
+  const registerForm = document.getElementById('student-register-form');
+  if (registerForm) registerForm.addEventListener('submit', performRegister);
+
+  const guestBtn = document.getElementById('guest-login-btn');
+  if (guestBtn) guestBtn.addEventListener('click', quickGuestLogin);
+
+  const sidebarLogoutBtn = document.getElementById('sidebar-logout-item');
+  if (sidebarLogoutBtn) sidebarLogoutBtn.addEventListener('click', handleLogout);
+
+  const profileLogoutBtn = document.getElementById('profile-logout-btn');
+  if (profileLogoutBtn) profileLogoutBtn.addEventListener('click', handleLogout);
+
+  // 10. 彈窗背景與關閉按鈕點擊
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) closeAllModals();
@@ -1027,7 +1240,7 @@ function bindEvents() {
     closeBtn.addEventListener('click', () => closeAllModals());
   });
 
-  // 10. 個人資料儲存
+  // 11. 個人資料儲存
   const editProfileForm = document.getElementById('edit-profile-form');
   if (editProfileForm) {
     editProfileForm.addEventListener('submit', handleSaveProfile);

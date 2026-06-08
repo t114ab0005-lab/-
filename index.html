@@ -12,6 +12,89 @@
 </head>
 <body>
 
+  <!-- LOGIN & REGISTER SCREEN OVERLAY -->
+  <div id="login-screen" class="login-overlay-screen">
+    <div class="login-card">
+      <div class="login-header-logo">
+        <div class="logo-icon">U</div>
+        <h2>UniTask</h2>
+        <p>大學生任務互助平台</p>
+      </div>
+      
+      <h3 id="login-modal-title" class="login-modal-title">學生接案登入</h3>
+      
+      <!-- LOGIN FORM -->
+      <div id="login-form-box" class="login-form-container">
+        <form id="email-login-form">
+          <div class="form-group">
+            <label for="login-email">學校信箱 (.edu.tw)</label>
+            <input type="email" id="login-email" class="form-input" placeholder="例如：student@ntu.edu.tw" required value="student@ntu.edu.tw">
+          </div>
+          <div class="form-group">
+            <label for="login-password">密碼</label>
+            <input type="password" id="login-password" class="form-input" placeholder="請輸入密碼" required value="password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.9rem;">
+            <i class="fa-solid fa-right-to-bracket"></i> 登入系統
+          </button>
+        </form>
+        
+        <div class="login-divider"><span>或</span></div>
+        
+        <button id="guest-login-btn" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 0.9rem; border-color: var(--secondary);">
+          <i class="fa-solid fa-bolt" style="color: var(--secondary);"></i> 訪客登入 / 學生快速體驗
+        </button>
+        
+        <p class="login-switch-prompt">還沒有帳號？ <span id="switch-to-register">切換至註冊</span></p>
+      </div>
+      
+      <!-- REGISTER FORM -->
+      <div id="register-form-box" class="login-form-container" style="display: none;">
+        <form id="student-register-form">
+          <div class="form-group">
+            <label for="reg-name">學生姓名</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="例如：王小明" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-email">學校學術信箱 (.edu.tw)</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="例如：xiaoming@ntu.edu.tw" required>
+          </div>
+          <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; flex-direction: row; margin: 0; padding: 0;">
+            <div class="form-group">
+              <label for="reg-school">就讀學校</label>
+              <input type="text" id="reg-school" class="form-input" placeholder="如：臺灣大學" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-major">科系</label>
+              <input type="text" id="reg-major" class="form-input" placeholder="如：資工系" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-year">年級</label>
+            <select id="reg-year" class="form-select">
+              <option value="大一">大一</option>
+              <option value="大二">大二</option>
+              <option value="大三">大三</option>
+              <option value="大四">大四</option>
+              <option value="碩士班">碩士班</option>
+              <option value="博士班">博士班</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-password">設定密碼</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="請輸入密碼" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.9rem;">
+            <i class="fa-solid fa-user-plus"></i> 註冊並登入
+          </button>
+        </form>
+        
+        <p class="login-switch-prompt">已經有帳號了？ <span id="switch-to-login">切換至登入</span></p>
+      </div>
+    </div>
+  </div>
+
   <!-- App Shell Container -->
   <div class="app-container">
 
@@ -22,7 +105,7 @@
         <span class="logo-text">UniTask</span>
       </div>
 
-      <ul class="nav-links">
+      <ul class="nav-links" style="height: 100%; display: flex; flex-direction: column;">
         <li class="nav-item active" data-tab="lobby">
           <i class="fa-solid fa-compass"></i>
           <span>任務大廳</span>
@@ -38,6 +121,12 @@
         <li class="nav-item" data-tab="profile">
           <i class="fa-solid fa-user-gear"></i>
           <span>個人資料</span>
+        </li>
+        
+        <!-- Sidebar Logout item -->
+        <li class="nav-item" id="sidebar-logout-item" style="margin-top: auto; border-top: 1px solid var(--border-color); border-radius: 0; padding-top: 1.5rem; color: var(--danger-glow); transition: var(--transition-fast);">
+          <i class="fa-solid fa-right-from-bracket" style="color: var(--danger);"></i>
+          <span style="color: var(--text-secondary);">登出系統</span>
         </li>
       </ul>
 
@@ -69,7 +158,7 @@
           </div>
 
           <button class="btn btn-primary" onclick="switchTab('post-demo')">
-            <i class="fa-solid fa-circle-plus"></i> 發發任務
+            <i class="fa-solid fa-circle-plus"></i> 發佈任務
           </button>
         </div>
       </header>
@@ -86,7 +175,7 @@
           </div>
         </div>
 
-        <div class="stat-card cyan">
+        <div class="stat-card cyan" onclick="navigateToProfileTab('active')" style="cursor: pointer;">
           <div class="stat-icon">
             <i class="fa-solid fa-spinner"></i>
           </div>
@@ -96,7 +185,7 @@
           </div>
         </div>
 
-        <div class="stat-card emerald">
+        <div class="stat-card emerald" onclick="navigateToProfileTab('history')" style="cursor: pointer;">
           <div class="stat-icon">
             <i class="fa-solid fa-circle-check"></i>
           </div>
@@ -379,8 +468,13 @@
               </div>
             </div>
 
+            <!-- Profile actions -->
             <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="openEditProfileModal()">
               <i class="fa-solid fa-user-pen"></i> 編輯個人資料
+            </button>
+            
+            <button class="btn btn-outline" id="profile-logout-btn" style="width: 100%; margin-top: 0.75rem; border-color: rgba(244, 63, 94, 0.2); color: var(--danger);" onmouseover="this.style.background='rgba(244, 63, 94, 0.1)'" onmouseout="this.style.background='transparent'">
+              <i class="fa-solid fa-right-from-bracket"></i> 登出帳戶
             </button>
           </div>
 
