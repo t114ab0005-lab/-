@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniTask - 大學生任務互助平台</title>
+  <meta name="description" content="專為大學生設計的任務接取與互助平台，包含學術輔導、校園跑腿、技術外包、設計創意等豐富任務。">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Core CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- LOGIN & REGISTER SCREEN OVERLAY -->
+  <div id="login-screen" class="login-overlay-screen">
+    <div class="login-card">
+      <div class="login-header-logo">
+        <div class="logo-icon">U</div>
+        <h2>UniTask</h2>
+        <p>大學生任務互助平台</p>
+      </div>
+      
+      <h3 id="login-modal-title" class="login-modal-title">學生接案登入</h3>
+      
+      <!-- LOGIN FORM -->
+      <div id="login-form-box" class="login-form-container">
+        <form id="email-login-form">
+          <div class="form-group">
+            <label for="login-email">學校信箱 (.edu.tw)</label>
+            <input type="email" id="login-email" class="form-input" placeholder="例如：student@ntu.edu.tw" required value="student@ntu.edu.tw">
+          </div>
+          <div class="form-group">
+            <label for="login-password">密碼</label>
+            <input type="password" id="login-password" class="form-input" placeholder="請輸入密碼" required value="password">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.9rem;">
+            <i class="fa-solid fa-right-to-bracket"></i> 登入系統
+          </button>
+        </form>
+        
+        <div class="login-divider"><span>或</span></div>
+        
+        <button id="guest-login-btn" class="btn btn-secondary" style="width: 100%; justify-content: center; padding: 0.9rem; border-color: var(--secondary);">
+          <i class="fa-solid fa-bolt" style="color: var(--secondary);"></i> 訪客登入 / 學生快速體驗
+        </button>
+        
+        <p class="login-switch-prompt">還沒有帳號？ <span id="switch-to-register">切換至註冊</span></p>
+      </div>
+      
+      <!-- REGISTER FORM -->
+      <div id="register-form-box" class="login-form-container" style="display: none;">
+        <form id="student-register-form">
+          <div class="form-group">
+            <label for="reg-name">學生姓名</label>
+            <input type="text" id="reg-name" class="form-input" placeholder="例如：王小明" required>
+          </div>
+          <div class="form-group">
+            <label for="reg-email">學校學術信箱 (.edu.tw)</label>
+            <input type="email" id="reg-email" class="form-input" placeholder="例如：xiaoming@ntu.edu.tw" required>
+          </div>
+          <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; flex-direction: row; margin: 0; padding: 0;">
+            <div class="form-group">
+              <label for="reg-school">就讀學校</label>
+              <input type="text" id="reg-school" class="form-input" placeholder="如：臺灣大學" required>
+            </div>
+            <div class="form-group">
+              <label for="reg-major">科系</label>
+              <input type="text" id="reg-major" class="form-input" placeholder="如：資工系" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reg-year">年級</label>
+            <select id="reg-year" class="form-select">
+              <option value="大一">大一</option>
+              <option value="大二">大二</option>
+              <option value="大三">大三</option>
+              <option value="大四">大四</option>
+              <option value="碩士班">碩士班</option>
+              <option value="博士班">博士班</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="reg-password">設定密碼</label>
+            <input type="password" id="reg-password" class="form-input" placeholder="請輸入密碼" required>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem; padding: 0.9rem;">
+            <i class="fa-solid fa-user-plus"></i> 註冊並登入
+          </button>
+        </form>
+        
+        <p class="login-switch-prompt">已經有帳號了？ <span id="switch-to-login">切換至登入</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Shell Container -->
+  <div class="app-container">
+
+    <!-- 1. Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo-container">
+        <div class="logo-icon">U</div>
+        <span class="logo-text">UniTask</span>
+      </div>
+
+      <ul class="nav-links" style="height: 100%; display: flex; flex-direction: column;">
+        <li class="nav-item active" data-tab="lobby">
+          <i class="fa-solid fa-compass"></i>
+          <span>任務大廳</span>
+        </li>
+        <li class="nav-item" data-tab="quick-match">
+          <i class="fa-solid fa-bolt"></i>
+          <span>一鍵空檔速配</span>
+        </li>
+        <li class="nav-item" data-tab="post-demo">
+          <i class="fa-solid fa-circle-plus"></i>
+          <span>發布任務 (Demo)</span>
+        </li>
+        <li class="nav-item" data-tab="profile">
+          <i class="fa-solid fa-user-gear"></i>
+          <span>個人資料</span>
+        </li>
+        
+        <!-- Sidebar Logout item -->
+        <li class="nav-item" id="sidebar-logout-item" style="margin-top: auto; border-top: 1px solid var(--border-color); border-radius: 0; padding-top: 1.5rem; color: var(--danger-glow); transition: var(--transition-fast);">
+          <i class="fa-solid fa-right-from-bracket" style="color: var(--danger);"></i>
+          <span style="color: var(--text-secondary);">登出系統</span>
+        </li>
+      </ul>
+
+      <!-- User Brief Card -->
+      <div class="user-brief" onclick="switchTab('profile')">
+        <img id="sidebar-avatar" class="user-brief-avatar" src="" alt="頭像">
+        <div class="user-brief-info">
+          <span id="sidebar-name" class="user-brief-name">讀取中...</span>
+          <span id="sidebar-school" class="user-brief-school">讀取中...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. Main Content Area -->
+    <main class="main-content">
+
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="header-title-section">
+          <h1 id="header-main-title">任務大廳</h1>
+          <p id="header-main-desc">瀏覽最新的校園互助任務，接取合適的工作賺取報酬！</p>
+        </div>
+
+        <div class="header-actions">
+          <!-- Interactive Search Bar -->
+          <div id="search-wrapper-container" class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="task-search" class="search-input" placeholder="搜尋任務名稱、關鍵字...">
+          </div>
+
+          <button class="btn btn-primary" onclick="switchTab('post-demo')">
+            <i class="fa-solid fa-circle-plus"></i> 發佈任務
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Statistics Grid -->
+      <section class="dashboard-grid">
+        <div class="stat-card purple">
+          <div class="stat-icon">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div class="stat-info">
+            <span id="stat-available" class="stat-value">0</span>
+            <span class="stat-label">開放任務</span>
+          </div>
+        </div>
+
+        <div class="stat-card cyan" onclick="navigateToProfileTab('active')" style="cursor: pointer;">
+          <div class="stat-icon">
+            <i class="fa-solid fa-spinner"></i>
+          </div>
+          <div class="stat-info">
+            <span id="stat-active" class="stat-value">0</span>
+            <span class="stat-label">進行中任務</span>
+          </div>
+        </div>
+
+        <div class="stat-card emerald" onclick="navigateToProfileTab('history')" style="cursor: pointer;">
+          <div class="stat-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-info">
+            <span id="stat-completed" class="stat-value">0</span>
+            <span class="stat-label">已完成任務</span>
+          </div>
+        </div>
+
+        <div class="stat-card amber">
+          <div class="stat-icon">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+          <div class="stat-info">
+            <span id="stat-earnings" class="stat-value">$0</span>
+            <span class="stat-label">累積收益</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filtering Dashboard (Only visible on lobby tab) -->
+      <section id="filter-panel-container" class="filter-panel">
+        <div class="filter-row">
+          <!-- Category Filter Tags -->
+          <div class="filter-group">
+            <label>任務分類</label>
+            <div class="category-tags-container">
+              <span class="category-tag active" data-category="all">
+                <i class="fa-solid fa-globe"></i> 全部
+              </span>
+              <span class="category-tag" data-category="academic">
+                <i class="fa-solid fa-graduation-cap"></i> 學術輔導
+              </span>
+              <span class="category-tag" data-category="delivery">
+                <i class="fa-solid fa-motorcycle"></i> 校園跑腿
+              </span>
+              <span class="category-tag" data-category="event">
+                <i class="fa-solid fa-calendar-day"></i> 活動協助
+              </span>
+              <span class="category-tag" data-category="tech">
+                <i class="fa-solid fa-code"></i> 技術開發
+              </span>
+              <span class="category-tag" data-category="design">
+                <i class="fa-solid fa-palette"></i> 設計創意
+              </span>
+              <span class="category-tag" data-category="survey">
+                <i class="fa-solid fa-clipboard-question"></i> 問卷研究
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-row" style="margin-top: 0.5rem;">
+          <!-- Price Slider -->
+          <div class="filter-group" style="flex-grow: 2;">
+            <label>報酬金額下限</label>
+            <div class="slider-container">
+              <input type="range" id="reward-slider" class="price-slider" min="0" max="5000" step="50" value="0">
+              <span id="reward-value-display" class="price-value-badge">$0+</span>
+            </div>
+          </div>
+
+          <!-- School Filter -->
+          <div class="filter-group small">
+            <label>學校範圍</label>
+            <select id="school-select" class="form-select">
+              <option value="all">所有學校</option>
+              <option value="my">我的學校 (臺大)</option>
+              <option value="other">其他學校</option>
+            </select>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="filter-group small">
+            <label>排序方式</label>
+            <select id="sort-select" class="form-select">
+              <option value="newest">最新發佈</option>
+              <option value="reward-desc">金額由高到低</option>
+              <option value="reward-asc">金額由低到高</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 1: Task Lobby View -->
+      <section id="lobby-view">
+        <div id="tasks-container" class="tasks-grid">
+          <!-- Task cards will be dynamically injected here -->
+        </div>
+      </section>
+
+      <!-- View 2: One-click Free Time Matching View -->
+      <section id="quick-match-view" style="display: none;">
+        <div class="filter-panel" style="margin-bottom: 2rem; gap: 1.5rem;">
+          
+          <!-- 1. Calendar Grid Matrix -->
+          <div class="filter-group">
+            <label><i class="fa-regular fa-calendar-check"></i> 請選取您的週間空閒時段 (可複選)</label>
+            
+            <div class="calendar-matrix-wrapper">
+              <table class="calendar-table">
+                <thead>
+                  <tr>
+                    <th>時段 / 星期</th>
+                    <th>週一</th>
+                    <th>週二</th>
+                    <th>週三</th>
+                    <th>週四</th>
+                    <th>週五</th>
+                    <th>週六</th>
+                    <th>週日</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="time-header">上午 (08:00 - 12:00)</td>
+                    <td class="calendar-cell" data-slot="Mon-morning"></td>
+                    <td class="calendar-cell" data-slot="Tue-morning"></td>
+                    <td class="calendar-cell" data-slot="Wed-morning"></td>
+                    <td class="calendar-cell" data-slot="Thu-morning"></td>
+                    <td class="calendar-cell" data-slot="Fri-morning"></td>
+                    <td class="calendar-cell" data-slot="Sat-morning"></td>
+                    <td class="calendar-cell" data-slot="Sun-morning"></td>
+                  </tr>
+                  <tr>
+                    <td class="time-header">下午 (12:00 - 18:00)</td>
+                    <td class="calendar-cell" data-slot="Mon-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Tue-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Wed-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Thu-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Fri-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Sat-afternoon"></td>
+                    <td class="calendar-cell" data-slot="Sun-afternoon"></td>
+                  </tr>
+                  <tr>
+                    <td class="time-header">晚上 (18:00 - 22:00)</td>
+                    <td class="calendar-cell" data-slot="Mon-evening"></td>
+                    <td class="calendar-cell" data-slot="Tue-evening"></td>
+                    <td class="calendar-cell" data-slot="Wed-evening"></td>
+                    <td class="calendar-cell" data-slot="Thu-evening"></td>
+                    <td class="calendar-cell" data-slot="Fri-evening"></td>
+                    <td class="calendar-cell" data-slot="Sat-evening"></td>
+                    <td class="calendar-cell" data-slot="Sun-evening"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Tag Buttons Group -->
+          <div class="filter-group">
+            <label><i class="fa-solid fa-tags"></i> 選擇您感興趣的任務類型標籤</label>
+            <div class="match-tags-wrapper">
+              <button class="match-tag-btn" data-tag="跑腿">#跑腿</button>
+              <button class="match-tag-btn" data-tag="文書">#文書</button>
+              <button class="match-tag-btn" data-tag="體力活">#體力活</button>
+              <button class="match-tag-btn" data-tag="學術">#學術</button>
+              <button class="match-tag-btn" data-tag="設計">#設計</button>
+              <button class="match-tag-btn" data-tag="技術">#技術</button>
+            </div>
+          </div>
+
+          <!-- 3. Submit Match Button -->
+          <div style="display: flex; gap: 1rem;">
+            <button id="run-match-btn" class="btn btn-primary" style="flex: 1; padding: 1rem; justify-content: center; font-size: 1.05rem;">
+              <i class="fa-solid fa-bolt"></i> 開始一鍵空檔速配
+            </button>
+            <button class="btn btn-secondary" onclick="resetQuickMatchUI()">
+              重設條件
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Matching Results Grid -->
+        <div class="match-results-section">
+          <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary); border-left: 4px solid var(--primary); padding-left: 0.5rem;">
+            速配推薦任務
+          </h2>
+          <div id="quick-match-results">
+            <!-- Results injected here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- View 3: Publish Task (Demo) View -->
+      <section id="post-demo-view" style="display: none;">
+        <div class="filter-panel" style="max-width: 700px; margin: 0 auto;">
+          <div style="margin-bottom: 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.25rem;">模擬發布任務</h2>
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">已為您預先填妥假資料。點擊下方按鈕即可一鍵發布並切換至任務大廳！</p>
+          </div>
+
+          <form id="demo-publish-form">
+            <div class="form-grid">
+              
+              <div class="form-group">
+                <label for="demo-title">任務標題</label>
+                <input type="text" id="demo-title" class="form-input" required placeholder="任務標題" style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1);">
+              </div>
+
+              <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex-direction: row;">
+                <div class="form-group">
+                  <label for="demo-category">任務分類</label>
+                  <select id="demo-category" class="form-select" style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1);">
+                    <option value="academic">學術輔導</option>
+                    <option value="delivery" selected>校園跑腿</option>
+                    <option value="event">活動協助</option>
+                    <option value="tech">技術開發</option>
+                    <option value="design">設計創意</option>
+                    <option value="survey">問卷研究</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="demo-reward">任務報酬 (元)</label>
+                  <input type="number" id="demo-reward" class="form-input" required min="10" placeholder="報酬金額" style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1);">
+                </div>
+              </div>
+
+              <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex-direction: row;">
+                <div class="form-group">
+                  <label for="demo-est-time">預計工時</label>
+                  <input type="text" id="demo-est-time" class="form-input" required placeholder="預估工時" style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1);">
+                </div>
+                <div class="form-group">
+                  <label for="demo-deadline">任務截止日期</label>
+                  <input type="date" id="demo-deadline" class="form-input" required style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1);">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="demo-desc">詳細說明與要求</label>
+                <textarea id="demo-desc" class="form-textarea" required placeholder="任務描述" style="background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.1); min-height: 140px;"></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem; padding: 1.1rem; justify-content: center; font-size: 1.1rem;">
+                <i class="fa-solid fa-paper-plane"></i> 一鍵模擬發布
+              </button>
+
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- View 4: Profile View -->
+      <section id="profile-view" style="display: none;">
+        <div class="profile-container">
+          
+          <!-- Left side: Personal info card -->
+          <div class="profile-card">
+            <div class="profile-avatar-wrapper">
+              <img id="profile-avatar" class="profile-avatar" src="" alt="個人大頭貼">
+              <div id="profile-rating" class="profile-rating-badge">
+                <i class="fa-solid fa-star"></i> 5.0
+              </div>
+            </div>
+            
+            <h2 id="profile-name" class="profile-name">學生姓名</h2>
+            <div id="profile-identity" class="profile-identity">學校科系等級</div>
+
+            <div class="profile-stats-row">
+              <div class="profile-stat-box">
+                <span id="profile-stat-completed" class="profile-stat-num">0</span>
+                <span class="profile-stat-lbl">完成任務</span>
+              </div>
+              <div class="profile-stat-box">
+                <span id="profile-stat-earnings" class="profile-stat-num">$0</span>
+                <span class="profile-stat-lbl">接案收益</span>
+              </div>
+            </div>
+
+            <div class="profile-info-block">
+              <div class="profile-info-label">個人自傳</div>
+              <div id="profile-bio" class="profile-info-val bio">介紹載入中...</div>
+            </div>
+
+            <div class="profile-info-block">
+              <div class="profile-info-label">專業技能</div>
+              <div id="profile-skills" class="skills-container">
+                <!-- Skill badges will be injected here -->
+              </div>
+            </div>
+
+            <!-- Profile actions -->
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="openEditProfileModal()">
+              <i class="fa-solid fa-user-pen"></i> 編輯個人資料
+            </button>
+            
+            <button class="btn btn-outline" id="profile-logout-btn" style="width: 100%; margin-top: 0.75rem; border-color: rgba(244, 63, 94, 0.2); color: var(--danger);" onmouseover="this.style.background='rgba(244, 63, 94, 0.1)'" onmouseout="this.style.background='transparent'">
+              <i class="fa-solid fa-right-from-bracket"></i> 登出帳戶
+            </button>
+          </div>
+
+          <!-- Right side: History/Active tabs and lists -->
+          <div class="profile-details-panel">
+            <div class="section-tabs">
+              <button class="tab-btn active" data-subtab="history">任務歷史紀錄</button>
+              <button class="tab-btn" data-subtab="active">進行中工作</button>
+            </div>
+
+            <div id="profile-history-container" class="history-list">
+              <!-- Completed or ongoing tasks history items will go here -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: Task Detail and Action Window -->
+  <div id="detail-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">任務詳情</h3>
+        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <h2 id="detail-title" class="task-title" style="font-size: 1.35rem; margin-bottom: 1rem;">任務標題載入中...</h2>
+        
+        <div class="modal-detail-reward-section">
+          <div class="detail-meta-info">
+            <span class="detail-label-sub">完成報酬</span>
+            <span id="detail-reward" class="detail-reward-val">$0</span>
+          </div>
+          <span id="detail-category-badge" class="task-category-badge">分類標籤</span>
+        </div>
+
+        <div class="modal-detail-grid">
+          <div class="detail-meta-box">
+            <i class="fa-solid fa-school detail-meta-icon"></i>
+            <div class="detail-meta-info">
+              <span class="detail-meta-title">發佈學校</span>
+              <span id="detail-school" class="detail-meta-value">載入中</span>
+            </div>
+          </div>
+
+          <div class="detail-meta-box">
+            <i class="fa-regular fa-clock detail-meta-icon"></i>
+            <div class="detail-meta-info">
+              <span class="detail-meta-title">預估工作時間</span>
+              <span id="detail-est-time" class="detail-meta-value">載入中</span>
+            </div>
+          </div>
+
+          <div class="detail-meta-box">
+            <i class="fa-regular fa-calendar-check detail-meta-icon"></i>
+            <div class="detail-meta-info">
+              <span class="detail-meta-title">截止日期</span>
+              <span id="detail-deadline" class="detail-meta-value">載入中</span>
+            </div>
+          </div>
+
+          <div class="detail-meta-box">
+            <i class="fa-solid fa-shield-halved detail-meta-icon"></i>
+            <div class="detail-meta-info">
+              <span class="detail-meta-title">信譽保障</span>
+              <span class="detail-meta-value">官方核實保障撥款</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-description-section">
+          <h4 class="detail-description-title">工作說明與要求</h4>
+          <p id="detail-desc" class="detail-description-content">工作內容詳細描述載入中...</p>
+        </div>
+
+        <div class="detail-poster-section">
+          <img id="detail-poster-avatar" class="detail-poster-avatar" src="" alt="發佈者頭像">
+          <div class="detail-poster-info">
+            <span id="detail-poster-name" class="detail-poster-name">發佈人姓名</span>
+            <div class="detail-poster-role">任務案主</div>
+          </div>
+        </div>
+      </div>
+      <div id="detail-action-container" class="modal-footer">
+        <!-- Actions buttons (Accept, submit etc.) will be injected based on state -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Profile Form -->
+  <div id="edit-profile-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">編輯個人檔案</h3>
+        <button class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="edit-profile-form">
+        <div class="modal-body">
+          <div class="form-grid">
+            
+            <div class="form-group">
+              <label>選擇虛擬頭像</label>
+              <div id="avatar-selection-grid" class="avatar-selection-grid">
+                <!-- Avatar items will be injected here -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-name">學生姓名</label>
+              <input type="text" id="edit-name" class="form-input" required placeholder="例如：陳大文">
+            </div>
+
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; flex-direction: row;">
+              <div class="form-group">
+                <label for="edit-school">就讀學校</label>
+                <input type="text" id="edit-school" class="form-input" required placeholder="例如：國立臺灣大學">
+              </div>
+              <div class="form-group">
+                <label for="edit-major">就讀科系</label>
+                <input type="text" id="edit-major" class="form-input" required placeholder="例如：資訊工程學系">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-year">年級</label>
+              <select id="edit-year" class="form-select">
+                <option value="大一">大一</option>
+                <option value="大二">大二</option>
+                <option value="大三">大三</option>
+                <option value="大四">大四</option>
+                <option value="碩士班">碩士班</option>
+                <option value="博士班">博士班</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-bio">個人簡介 / 自傳</label>
+              <textarea id="edit-bio" class="form-textarea" placeholder="寫點自我介紹吧！讓其他學生或案主更信任你..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="edit-skills">技能標籤 (英文逗號隔開)</label>
+              <input type="text" id="edit-skills" class="form-input" placeholder="例如：JavaScript, Python, 英文檢定">
+            </div>
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary modal-close">取消</button>
+          <button type="submit" class="btn btn-primary">儲存變更</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="notification-container"></div>
+
+  <!-- Core App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
