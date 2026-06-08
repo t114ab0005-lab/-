@@ -4,7 +4,8 @@
   "description": "UniTask - 大學生任務互助平台",
   "main": "index.html",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "node test-mock.js"
   },
   "dependencies": {},
   "devDependencies": {

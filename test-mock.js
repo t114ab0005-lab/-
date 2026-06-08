@@ -122,6 +122,52 @@ try {
   eval(appCode);
   log("Loaded app.js successfully!");
 
+  // Unit tests for parseEstTime
+  log("--- Testing parseEstTime ---");
+  const testTimes = [
+    { input: "4 小時", expected: 4.0 },
+    { input: "1.5 小時", expected: 1.5 },
+    { input: "1 小時內", expected: 1.0 },
+    { input: "10 分鐘", expected: 0.16666666666666666 },
+    { input: null, expected: 1.0 }
+  ];
+  testTimes.forEach(t => {
+    const res = parseEstTime(t.input);
+    const pass = Math.abs(res - t.expected) < 0.01;
+    log(`parseEstTime("${t.input}") = ${res} (Expected: ${t.expected}) - ${pass ? "PASS" : "FAIL"}`);
+  });
+
+  // Unit tests for PriorityQueue
+  log("--- Testing PriorityQueue ---");
+  const pq = new PriorityQueue();
+  pq.push("Task A", 10);
+  pq.push("Task B", 25);
+  pq.push("Task C", 5);
+  pq.push("Task D", 18);
+
+  const pqResults = [];
+  while (!pq.isEmpty()) {
+    pqResults.push(pq.pop());
+  }
+  const pqPass = JSON.stringify(pqResults) === JSON.stringify(["Task B", "Task D", "Task A", "Task C"]);
+  log("Priority Queue pop order:", pqResults, pqPass ? "- PASS" : "- FAIL");
+
+  // Integration test for runQuickMatch scheduling
+  log("--- Testing runQuickMatch smart scheduling ---");
+  state.matchSelectedSlots = ["Tue-evening", "Sat-afternoon"];
+  state.matchSelectedTags = ["學術", "文書", "體力活"];
+  
+  // Set up mock DOM elements
+  const resultsContainer = document.getElementById('quick-match-results');
+  runQuickMatch();
+  
+  log("Smart Match innerHTML length:", resultsContainer.innerHTML.length);
+  const hasTimeline = resultsContainer.innerHTML.includes("ai-timeline");
+  const hasStats = resultsContainer.innerHTML.includes("ai-stats-row");
+  const hasCandidateHeader = resultsContainer.innerHTML.includes("所有符合條件的候選任務");
+  log(`HTML includes timeline: ${hasTimeline}, stats: ${hasStats}, candidate header: ${hasCandidateHeader}`);
+  log(`runQuickMatch scheduling: ${hasTimeline && hasStats && hasCandidateHeader ? "PASS" : "FAIL"}`);
+
   // Dispatch DOMContentLoaded
   const readyEvent = { type: 'DOMContentLoaded' };
   docListeners['DOMContentLoaded'].forEach(h => h(readyEvent));

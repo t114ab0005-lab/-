@@ -1682,3 +1682,356 @@ body {
 #sidebar-logout-item:hover span {
   color: var(--danger) !important;
 }
+
+/* ==========================================================================
+   AI Smart Scheduling Timeline & Dashboard
+   ========================================================================== */
+
+.ai-schedule-dashboard {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.ai-schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-badge {
+  background: linear-gradient(135deg, var(--primary), #4338ca);
+  color: white;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.ai-stats-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ai-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.ai-stat-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.ai-stat-val {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--success);
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.ai-stat-item:nth-child(2) .ai-stat-val {
+  color: var(--secondary);
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.ai-stat-item:nth-child(3) .ai-stat-val {
+  color: var(--primary-hover);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+.ai-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+}
+
+.ai-timeline-line {
+  position: absolute;
+  left: 110px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 6px, transparent 6px, transparent 12px);
+  pointer-events: none;
+}
+
+.ai-timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.ai-timeline-time {
+  width: 95px;
+  text-align: right;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.time-badge {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--primary-hover);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ai-timeline-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 3px solid #0f172a;
+  box-shadow: 0 0 10px var(--primary);
+  z-index: 2;
+  margin-left: -7px;
+  margin-right: -7px;
+  transition: all 0.2s ease;
+}
+
+.ai-timeline-content-card {
+  flex-grow: 1;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.ai-timeline-item:hover .ai-timeline-content-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.ai-timeline-item:hover .ai-timeline-node {
+  transform: scale(1.2);
+  box-shadow: 0 0 15px var(--primary);
+}
+
+.ai-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow: hidden;
+  margin-right: 1rem;
+}
+
+.ai-card-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ai-card-reward-section {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  align-items: flex-end;
+}
+
+.ai-card-cp {
+  font-size: 0.75rem;
+  color: var(--primary-glow);
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.ai-card-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--success);
+}
+
+/* ==========================================================================
+   Task Progress & Stepper Styles
+   ========================================================================== */
+
+.task-progress-container {
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.task-progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.task-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.task-progress-bar-inner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+.task-progress-bar-inner.completed {
+  background: linear-gradient(90deg, var(--success) 0%, #059669 100%);
+}
+
+.task-stepper-section {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.01);
+}
+
+.stepper-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  margin-top: 1rem;
+  padding-left: 0.5rem;
+}
+
+/* Stepper vertical line */
+.stepper-list::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  z-index: 1;
+}
+
+.stepper-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0f172a;
+  border: 2px solid var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.stepper-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stepper-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
+}
+
+.stepper-status-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
+}
+
+/* Stepper Item States */
+.stepper-item.completed .stepper-icon {
+  border-color: var(--success);
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.1);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+.stepper-item.completed .stepper-title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.stepper-item.completed .stepper-status-text {
+  color: var(--success);
+  opacity: 0.8;
+}
+
+.stepper-item.ongoing .stepper-icon {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+}
+.stepper-item.ongoing .stepper-title {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.stepper-item.ongoing .stepper-status-text {
+  color: var(--primary-hover);
+  font-weight: 600;
+}
+
+.stepper-item.submitted .stepper-icon {
+  border-color: var(--warning);
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+}
+.stepper-item.submitted .stepper-title {
+  color: var(--text-primary);
+}
+.stepper-item.submitted .stepper-status-text {
+  color: var(--warning);
+}
+
+.stepper-item.upcoming .stepper-icon {
+  background: #0f172a;
+}
+

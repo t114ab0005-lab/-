@@ -19,7 +19,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=xiaoming",
     status: "available",
     matchTags: ["學術", "文書"],
-    timeSlots: ["Tue-evening", "Thu-evening", "Sat-afternoon"]
+    timeSlots: ["Tue-evening", "Thu-evening", "Sat-afternoon"],
+    stages: ["觀念複習與極限基礎輔導", "導數與積分應用衝刺輔導"],
+    currentStageIndex: 0
   },
   {
     id: 2,
@@ -35,7 +37,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=shiya",
     status: "available",
     matchTags: ["體力活", "跑腿"],
-    timeSlots: ["Wed-afternoon", "Sat-afternoon", "Sun-morning"]
+    timeSlots: ["Wed-afternoon", "Sat-afternoon", "Sun-morning"],
+    stages: ["載運與搬運上樓", "開箱與整理歸位"],
+    currentStageIndex: 0
   },
   {
     id: 3,
@@ -51,7 +55,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=sa",
     status: "available",
     matchTags: ["體力活", "跑腿"],
-    timeSlots: ["Fri-afternoon", "Fri-evening", "Sat-morning", "Sat-afternoon", "Sat-evening"]
+    timeSlots: ["Fri-afternoon", "Fri-evening", "Sat-morning", "Sat-afternoon", "Sat-evening"],
+    stages: ["現場秩序維護與樂團引導", "舞台器材撤場搬運與垃圾收尾"],
+    currentStageIndex: 0
   },
   {
     id: 4,
@@ -67,7 +73,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=assistant",
     status: "available",
     matchTags: ["技術"],
-    timeSlots: ["Mon-evening", "Wed-evening", "Fri-evening", "Sun-evening"]
+    timeSlots: ["Mon-evening", "Wed-evening", "Fri-evening", "Sun-evening"],
+    stages: ["大綱設計與目標網站結構分析", "爬蟲代碼編寫與反爬處理", "CSV 成果輸出與程式交接說明"],
+    currentStageIndex: 0
   },
   {
     id: 5,
@@ -80,10 +88,12 @@ const INITIAL_TASKS = [
     deadline: "2026-06-18",
     estTime: "5 小時",
     posterName: "吉他社社長",
-    posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=guitar",
+    posterAvatar: "https://api.dicebear.com/7.x/guitar/svg?seed=guitar",
     status: "available",
     matchTags: ["設計", "文書"],
-    timeSlots: ["Mon-afternoon", "Tue-afternoon", "Wed-afternoon", "Thu-afternoon", "Fri-afternoon"]
+    timeSlots: ["Mon-afternoon", "Tue-afternoon", "Wed-afternoon", "Thu-afternoon", "Fri-afternoon"],
+    stages: ["海報主視覺草稿定案", "折頁排版與兩次校稿", "交付最終印刷原檔(AI/PSD)"],
+    currentStageIndex: 0
   },
   {
     id: 6,
@@ -99,7 +109,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=psy",
     status: "available",
     matchTags: ["學術", "跑腿"],
-    timeSlots: ["Mon-morning", "Tue-morning", "Wed-morning", "Thu-morning", "Fri-morning"]
+    timeSlots: ["Mon-morning", "Tue-morning", "Wed-morning", "Thu-morning", "Fri-morning"],
+    stages: ["完成現場眼動儀校正與實驗測試"],
+    currentStageIndex: 0
   },
   {
     id: 7,
@@ -115,7 +127,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=prof",
     status: "available",
     matchTags: ["學術", "文書"],
-    timeSlots: ["Sat-morning", "Sat-afternoon", "Sun-afternoon", "Sun-evening"]
+    timeSlots: ["Sat-morning", "Sat-afternoon", "Sun-afternoon", "Sun-evening"],
+    stages: ["前兩章文法修訂與糾錯", "後兩章學術用語修飾與總結評審"],
+    currentStageIndex: 0
   },
   {
     id: 8,
@@ -131,7 +145,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=huang",
     status: "available",
     matchTags: ["跑腿", "體力活"],
-    timeSlots: ["Mon-morning", "Tue-morning", "Wed-morning"]
+    timeSlots: ["Mon-morning", "Tue-morning", "Wed-morning"],
+    stages: ["現場排隊購買商品", "約定地點交貨付款"],
+    currentStageIndex: 0
   },
   {
     id: 9,
@@ -147,7 +163,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=maker",
     status: "available",
     matchTags: ["技術", "文書"],
-    timeSlots: ["Wed-afternoon", "Fri-afternoon"]
+    timeSlots: ["Wed-afternoon", "Fri-afternoon"],
+    stages: ["列印機基本調平與噴嘴清潔", "耗材裝載與 Cura 切片教學指引"],
+    currentStageIndex: 0
   },
   {
     id: 10,
@@ -163,7 +181,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=admission",
     status: "available",
     matchTags: ["體力活", "跑腿"],
-    timeSlots: ["Sat-morning", "Sat-afternoon", "Sun-morning", "Sun-afternoon"]
+    timeSlots: ["Sat-morning", "Sat-afternoon", "Sun-morning", "Sun-afternoon"],
+    stages: ["攤位簡介解說與傳單分發", "引導填寫諮詢表單與結算統計"],
+    currentStageIndex: 0
   },
   {
     id: 11,
@@ -179,7 +199,9 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=unitrade",
     status: "available",
     matchTags: ["設計", "技術"],
-    timeSlots: ["Sat-evening", "Sun-evening", "Mon-evening", "Tue-evening"]
+    timeSlots: ["Sat-evening", "Sun-evening", "Mon-evening", "Tue-evening"],
+    stages: ["繪製線框圖 (Wireframe) 與流程確認", "設計高保真 (Hi-Fi) UI 介面", "實作 Figma 互動原型並交付說明"],
+    currentStageIndex: 0
   },
   {
     id: 12,
@@ -195,7 +217,63 @@ const INITIAL_TASKS = [
     posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=finance",
     status: "available",
     matchTags: ["學術"],
-    timeSlots: ["Mon-morning", "Tue-afternoon", "Wed-evening", "Thu-morning", "Fri-afternoon", "Sat-evening", "Sun-morning"]
+    timeSlots: ["Mon-morning", "Tue-afternoon", "Wed-evening", "Thu-morning", "Fri-afternoon", "Sat-evening", "Sun-morning"],
+    stages: ["填寫線上問卷並確認通過信度篩選"],
+    currentStageIndex: 0
+  },
+  {
+    id: 13,
+    title: "微積分宣傳微電影劇本編寫與分鏡設計",
+    description: "需要幫我們的教學推廣微電影撰寫 3 分鐘的劇本，並繪製簡單的分鏡圖。主題是微積分在生活中的趣味應用。需有幽默感，分鏡草圖看得懂即可，不需要太精細。",
+    reward: 2000,
+    category: "academic",
+    categoryLabel: "學術輔導",
+    university: "國立臺灣大學",
+    deadline: "2026-06-25",
+    estTime: "6 小時",
+    posterName: "數學系推廣小組",
+    posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=math",
+    status: "available",
+    matchTags: ["學術", "設計"],
+    timeSlots: ["Mon-evening", "Wed-evening", "Fri-evening"],
+    stages: ["劇本大綱與主要台詞定案", "分鏡草案繪製與修改確認", "交付完整編劇與分鏡電子檔"],
+    currentStageIndex: 0
+  },
+  {
+    id: 14,
+    title: "校園創業大賽 - 發表簡報 PPT 美化與精煉",
+    description: "我們已經有了大綱與草稿內容（約 15 頁 PPT），需要專業簡報設計高手協助進行視覺化美化，包含配色調整、邏輯圖表重繪與平滑過渡動畫設計。請附上簡報設計作品集。",
+    reward: 1500,
+    category: "design",
+    categoryLabel: "設計創意",
+    university: "國立臺灣大學",
+    deadline: "2026-06-16",
+    estTime: "5 小時",
+    posterName: "創業團隊 Lead",
+    posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=startup",
+    status: "available",
+    matchTags: ["設計", "文書"],
+    timeSlots: ["Tue-afternoon", "Thu-afternoon", "Sat-morning"],
+    stages: ["排版配色與第一版設計稿", "動畫特效添加與最終校對交接"],
+    currentStageIndex: 0
+  },
+  {
+    id: 15,
+    title: "外籍交換生中文日常對話練習伴讀",
+    description: "輔導一對一。對象為來自美國的交換生，中文具備基本拼音能力。每次伴讀 1.5 小時，共需伴讀四次，每次需要依據指定主題進行對談並糾正發音。地點在社科院圖書館。",
+    reward: 1200,
+    category: "academic",
+    categoryLabel: "學術輔導",
+    university: "國立臺灣大學",
+    deadline: "2026-06-28",
+    estTime: "6 小時",
+    posterName: "華語文教學中心",
+    posterAvatar: "https://api.dicebear.com/7.x/bottts/svg?seed=clc",
+    status: "available",
+    matchTags: ["學術", "跑腿"],
+    timeSlots: ["Mon-afternoon", "Wed-afternoon", "Fri-afternoon", "Sun-afternoon"],
+    stages: ["第一次主題伴讀：自我介紹與日常", "第二次主題伴讀：食物與台灣夜市", "第三次主題伴讀：交通與旅遊景點", "第四次主題伴讀：商務用語與心得結案"],
+    currentStageIndex: 0
   }
 ];
 
@@ -246,26 +324,243 @@ let state = {
   },
   matchSelectedSlots: [],
   matchSelectedTags: [],
-  isLoggedIn: false
+  isLoggedIn: false,
+  currentUserEmail: null
 };
+
+// --- 優先佇列 (Priority Queue) 與排程資料結構 ---
+// 基於最大二元堆積 (Max Binary Heap) 實現的優先佇列，用於依 CP 值對任務進行降序排序
+class PriorityQueue {
+  constructor() {
+    this.heap = [];
+  }
+
+  // 取得佇列大小
+  size() {
+    return this.heap.length;
+  }
+
+  // 檢查佇列是否為空
+  isEmpty() {
+    return this.heap.length === 0;
+  }
+
+  // 取得目前最高 CP 值的任務（優先度最高）但不移除
+  peek() {
+    return this.heap[0] || null;
+  }
+
+  // 新增元素進入佇列，並依優先度（CP值）進行向上調整
+  push(item, priority) {
+    const node = { item, priority };
+    this.heap.push(node);
+    this._siftUp(this.heap.length - 1);
+  }
+
+  // 彈出並回傳目前 CP 值最高的任務，並重新調整堆積結構
+  pop() {
+    if (this.isEmpty()) return null;
+    const root = this.heap[0];
+    const last = this.heap.pop();
+    if (this.heap.length > 0) {
+      this.heap[0] = last;
+      this._siftDown(0);
+    }
+    return root.item;
+  }
+
+  // 向上調整內部堆積 (Sift Up)
+  _siftUp(index) {
+    let child = index;
+    while (child > 0) {
+      const parent = Math.floor((child - 1) / 2);
+      // 若子節點優先度大於父節點，則進行交換
+      if (this.heap[child].priority > this.heap[parent].priority) {
+        this._swap(child, parent);
+        child = parent;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // 向下調整內部堆積 (Sift Down)
+  _siftDown(index) {
+    let parent = index;
+    const length = this.heap.length;
+    while (true) {
+      let leftChild = 2 * parent + 1;
+      let rightChild = 2 * parent + 2;
+      let largest = parent;
+
+      // 與左子節點比較
+      if (leftChild < length && this.heap[leftChild].priority > this.heap[largest].priority) {
+        largest = leftChild;
+      }
+      // 與右子節點比較
+      if (rightChild < length && this.heap[rightChild].priority > this.heap[largest].priority) {
+        largest = rightChild;
+      }
+
+      // 若最大值不是原父節點，則與最大子節點交換並繼續向下調整
+      if (largest !== parent) {
+        this._swap(parent, largest);
+        parent = largest;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // 交換堆積中的兩個元素
+  _swap(i, j) {
+    const temp = this.heap[i];
+    this.heap[i] = this.heap[j];
+    this.heap[j] = temp;
+  }
+}
+
+// 解析任務的預估工時描述，統一轉換為數值小時數
+// 支援 "X 小時", "X.5 小時", "X 小時內", "X 分鐘" 等格式
+function parseEstTime(estTimeStr) {
+  if (!estTimeStr) return 1.0;
+  const clean = estTimeStr.toString().replace(/\s+/g, '');
+  
+  if (clean.includes('小時')) {
+    const match = clean.match(/([0-9.]+)/);
+    if (match) {
+      let hours = parseFloat(match[1]);
+      if (clean.includes('半')) hours += 0.5;
+      return hours || 1.0;
+    }
+  } else if (clean.includes('分鐘')) {
+    const match = clean.match(/([0-9.]+)/);
+    if (match) {
+      return parseFloat(match[1]) / 60.0;
+    }
+  }
+  return 1.0; // 預設為 1 小時
+}
+
+// --- 本地多帳號數據存取機制 ---
+function getAccountsFromStorage() {
+  const stored = localStorage.getItem('unitask_accounts');
+  if (!stored) {
+    const initialAccounts = {
+      "student@ntu.edu.tw": {
+        password: "password",
+        userProfile: {
+          ...INITIAL_USER,
+          name: "體驗學生",
+          university: "國立臺灣大學",
+          avatar: "https://api.dicebear.com/7.x/adventurer/svg?seed=placeholder"
+        },
+        tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
+      }
+    };
+    localStorage.setItem('unitask_accounts', JSON.stringify(initialAccounts));
+    return initialAccounts;
+  }
+  return JSON.parse(stored);
+}
+
+function saveAccountToStorage(email, password, userProfile, tasks) {
+  const accounts = getAccountsFromStorage();
+  accounts[email] = { password, userProfile, tasks };
+  localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+}
 
 // --- 初始化應用 ---
 function initApp() {
-  // 檢查登入狀態
+  // 檢查登入狀態與當前帳號
   const loginFlag = localStorage.getItem('unitask_is_logged_in');
-  const storedTasks = localStorage.getItem('unitask_tasks');
+  const currentUserEmail = localStorage.getItem('unitask_current_user_email');
+  let storedTasks = localStorage.getItem('unitask_tasks');
   const storedUser = localStorage.getItem('unitask_user');
 
-  // 初始化任務數據
-  state.tasks = storedTasks ? JSON.parse(storedTasks) : JSON.parse(JSON.stringify(INITIAL_TASKS));
+  // 初始化多帳戶資料庫
+  const accounts = getAccountsFromStorage();
 
-  if (loginFlag === 'true') {
+  // 升級資料庫：檢查所有帳戶中的任務是否具備 stages 屬性或缺件，若缺少則自動補齊
+  let accountsUpdated = false;
+  for (const email in accounts) {
+    const account = accounts[email];
+    if (!account.tasks) continue;
+    const hasNewTasks = [13, 14, 15].every(id => account.tasks.some(t => t.id === id));
+    const hasStages = account.tasks.every(t => t.hasOwnProperty('stages'));
+    
+    if (!hasNewTasks || !hasStages) {
+      const updatedTasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+      account.tasks.forEach(oldTask => {
+        const matching = updatedTasks.find(t => t.id === oldTask.id);
+        if (matching) {
+          matching.status = oldTask.status;
+          matching.currentStageIndex = oldTask.currentStageIndex || 0;
+        }
+      });
+      account.tasks = updatedTasks;
+      accountsUpdated = true;
+    }
+  }
+  if (accountsUpdated) {
+    localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+  }
+
+  // 升級 Session 狀態：若 Session 快取任務缺少 stages 欄位，同樣自動升級
+  if (storedTasks) {
+    try {
+      const tasks = JSON.parse(storedTasks);
+      const hasNewTasks = [13, 14, 15].every(id => tasks.some(t => t.id === id));
+      const hasStages = tasks.every(t => t.hasOwnProperty('stages'));
+      if (!hasNewTasks || !hasStages) {
+        const updatedTasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
+        tasks.forEach(oldTask => {
+          const matching = updatedTasks.find(t => t.id === oldTask.id);
+          if (matching) {
+            matching.status = oldTask.status;
+            matching.currentStageIndex = oldTask.currentStageIndex || 0;
+          }
+        });
+        localStorage.setItem('unitask_tasks', JSON.stringify(updatedTasks));
+        storedTasks = JSON.stringify(updatedTasks);
+      }
+    } catch (e) {
+      console.error("Migration of storedTasks failed:", e);
+    }
+  }
+
+  // 預填「記住我」的信箱與密碼
+  const savedEmail = localStorage.getItem('unitask_saved_email');
+  const savedPassword = localStorage.getItem('unitask_saved_password');
+  const rememberCheckbox = document.getElementById('login-remember');
+  if (savedEmail && savedPassword) {
+    document.getElementById('login-email').value = savedEmail;
+    document.getElementById('login-password').value = savedPassword;
+    if (rememberCheckbox) rememberCheckbox.checked = true;
+  } else {
+    document.getElementById('login-email').value = 'student@ntu.edu.tw';
+    document.getElementById('login-password').value = 'password';
+    if (rememberCheckbox) rememberCheckbox.checked = false;
+  }
+
+  if (loginFlag === 'true' && currentUserEmail && accounts[currentUserEmail]) {
     state.isLoggedIn = true;
-    state.user = storedUser ? JSON.parse(storedUser) : JSON.parse(JSON.stringify(DEMO_USER));
+    state.currentUserEmail = currentUserEmail;
+    state.user = storedUser ? JSON.parse(storedUser) : accounts[currentUserEmail].userProfile;
+    state.tasks = storedTasks ? JSON.parse(storedTasks) : accounts[currentUserEmail].tasks;
+    document.getElementById('login-screen').style.display = 'none';
+  } else if (loginFlag === 'true') {
+    // 訪客登入
+    state.isLoggedIn = true;
+    state.currentUserEmail = null;
+    state.user = storedUser ? JSON.parse(storedUser) : JSON.parse(JSON.stringify(INITIAL_USER));
+    state.tasks = storedTasks ? JSON.parse(storedTasks) : JSON.parse(JSON.stringify(INITIAL_TASKS));
     document.getElementById('login-screen').style.display = 'none';
   } else {
     state.isLoggedIn = false;
+    state.currentUserEmail = null;
     state.user = JSON.parse(JSON.stringify(INITIAL_USER));
+    state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
     document.getElementById('login-screen').style.display = 'flex';
   }
 
@@ -302,6 +597,7 @@ function performLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
+  const rememberCheckbox = document.getElementById('login-remember');
 
   if (!email || !password) {
     showToast("請填寫所有欄位！", "danger");
@@ -313,25 +609,47 @@ function performLogin(e) {
     showToast("提示：建議使用學校信箱 (.edu.tw) 進行註冊，以享有完整大學生專屬權益！", "warning");
   }
 
-  // 每次登入時強制清空先前可能殘留的任務進度與快取
-  localStorage.removeItem('unitask_tasks');
-  localStorage.removeItem('unitask_user');
-  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
-
-  // 若輸入 demo 帳號，載入空白的初始資料，並預設信箱對應名稱以利體驗
-  if (email === "student@ntu.edu.tw") {
-    state.user = { 
-      ...JSON.parse(JSON.stringify(INITIAL_USER)),
-      name: "體驗學生",
-      university: "國立臺灣大學"
-    };
+  // 處理「記住我」的 LocalStorage 儲存
+  if (rememberCheckbox && rememberCheckbox.checked) {
+    localStorage.setItem('unitask_saved_email', email);
+    localStorage.setItem('unitask_saved_password', password);
   } else {
-    state.user = {
-      ...JSON.parse(JSON.stringify(INITIAL_USER)),
-      name: email.split('@')[0],
-      university: "學生體驗學校"
-    };
+    localStorage.removeItem('unitask_saved_email');
+    localStorage.removeItem('unitask_saved_password');
   }
+
+  // 讀取帳號資料庫
+  const accounts = getAccountsFromStorage();
+  let account = accounts[email];
+
+  if (!account) {
+    // 信箱不存在，自動為其註冊以優化體驗，並寫入資料庫
+    account = {
+      password: password,
+      userProfile: {
+        ...JSON.parse(JSON.stringify(INITIAL_USER)),
+        name: email.split('@')[0],
+        university: "學生體驗學校"
+      },
+      tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
+    };
+    accounts[email] = account;
+    localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+    showToast("信箱尚未註冊！已自動為您註冊新學生帳戶，並儲存登入資料。", "success");
+  } else {
+    // 帳戶存在，驗證密碼
+    if (account.password !== password) {
+      showToast("密碼錯誤，請重新輸入！", "danger");
+      return;
+    }
+  }
+
+  // 載入該登入帳號的專屬接案進度與個人履歷
+  state.currentUserEmail = email;
+  localStorage.setItem('unitask_current_user_email', email);
+  
+  state.tasks = account.tasks;
+  state.user = account.userProfile;
 
   saveStateToStorage();
   localStorage.setItem('unitask_is_logged_in', 'true');
@@ -370,6 +688,15 @@ function performRegister(e) {
     showToast("提示：建議使用學校信箱 (.edu.tw) 進行註冊，以享有完整大學生專屬權益！", "warning");
   }
 
+  // 檢查此信箱是否已經註冊過
+  const accounts = getAccountsFromStorage();
+  if (accounts[email]) {
+    showToast("此信箱已註冊過帳號！請直接進行登入。", "warning");
+    showLoginForm();
+    document.getElementById('login-email').value = email;
+    return;
+  }
+
   // 隨機選一個頭像
   const randomAvatar = AVATAR_OPTIONS[Math.floor(Math.random() * AVATAR_OPTIONS.length)];
 
@@ -387,7 +714,19 @@ function performRegister(e) {
     avatar: randomAvatar
   };
 
+  // 寫入本地資料庫
+  accounts[email] = {
+    password: password,
+    userProfile: newUser,
+    tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
+  };
+  localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+
+  state.currentUserEmail = email;
+  localStorage.setItem('unitask_current_user_email', email);
   state.user = newUser;
+  state.tasks = accounts[email].tasks;
+
   saveStateToStorage();
   localStorage.setItem('unitask_is_logged_in', 'true');
   state.isLoggedIn = true;
@@ -403,12 +742,15 @@ function performRegister(e) {
   renderSidebarBrief();
   renderStats();
   switchTab('lobby');
-  showToast("註冊成功！歡迎加入 UniTask 大學生互助社群。", "success");
+  showToast("註冊成功！帳戶已安全儲存，歡迎加入 UniTask。", "success");
 }
 
 // 快速體驗訪客登入
 function quickGuestLogin() {
-  // 每次訪客登入時，強制重置清空所有的接案進度與快取
+  // 每次訪客登入時，清除當前帳號快取，但訪客不會存入 accounts 資料庫中
+  state.currentUserEmail = null;
+  localStorage.removeItem('unitask_current_user_email');
+  
   localStorage.removeItem('unitask_tasks');
   localStorage.removeItem('unitask_user');
   
@@ -429,23 +771,25 @@ function quickGuestLogin() {
   renderSidebarBrief();
   renderStats();
   switchTab('lobby');
-  showToast("已使用學生訪客身份快速登入！", "success");
+  showToast("已使用學生訪客身份快速登入！（此身分不保存資料）", "success");
 }
 
 function handleLogout() {
-  // 清除登入標籤
+  // 清除登入標籤與目前使用者快取
   localStorage.setItem('unitask_is_logged_in', 'false');
+  localStorage.removeItem('unitask_current_user_email');
   state.isLoggedIn = false;
+  state.currentUserEmail = null;
   state.user = JSON.parse(JSON.stringify(INITIAL_USER));
+  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
 
   // 顯示登入畫面並重置首頁
   const loginOverlay = document.getElementById('login-screen');
   loginOverlay.style.display = 'flex';
   
-  // 清除快取中的狀態，重置回初始任務與用戶
+  // 清除當前 Session 快取，但保留 accounts 資料庫
   localStorage.removeItem('unitask_tasks');
   localStorage.removeItem('unitask_user');
-  state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
 
   renderSidebarBrief();
   renderStats();
@@ -516,6 +860,45 @@ function renderTasksList() {
   });
 }
 
+// 渲染任務執行進度條 HTML
+function renderTaskProgressBarHTML(task) {
+  if (!task.stages || task.status === 'available') return '';
+  
+  const totalStages = task.stages.length;
+  const currentIdx = task.currentStageIndex || 0;
+  
+  if (task.status === 'completed') {
+    return `
+      <div class="task-progress-container">
+        <div class="task-progress-text">
+          <span>已完成全部 ${totalStages} 個階段</span>
+          <span>100%</span>
+        </div>
+        <div class="task-progress-bar">
+          <div class="task-progress-bar-inner completed" style="width: 100%"></div>
+        </div>
+      </div>
+    `;
+  }
+  
+  const pct = Math.round((currentIdx / totalStages) * 100);
+  const currentStageName = task.stages[currentIdx] || '';
+  
+  return `
+    <div class="task-progress-container">
+      <div class="task-progress-text">
+        <span style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 180px;" title="目前階段：${currentStageName}">
+          進行中：${currentStageName}
+        </span>
+        <span>${pct}% (階段 ${currentIdx + 1}/${totalStages})</span>
+      </div>
+      <div class="task-progress-bar">
+        <div class="task-progress-bar-inner" style="width: ${pct}%"></div>
+      </div>
+    </div>
+  `;
+}
+
 function createTaskCard(task, showStatusBadge = false) {
   const isHighReward = task.reward >= 1500;
   const card = document.createElement('div');
@@ -549,6 +932,7 @@ function createTaskCard(task, showStatusBadge = false) {
         <span>截止：${task.deadline}</span>
       </div>
     </div>
+    ${renderTaskProgressBarHTML(task)}
     <div class="task-card-footer">
       <div class="task-school-info">
         <i class="fa-solid fa-location-dot"></i>
@@ -813,6 +1197,7 @@ function runQuickMatch() {
     return;
   }
 
+  // 篩選符合時段與標籤條件的所有開放任務
   const matched = state.tasks.filter(task => {
     if (task.status !== 'available') return false;
 
@@ -840,16 +1225,168 @@ function runQuickMatch() {
     return;
   }
 
-  const resultsGrid = document.createElement('div');
-  resultsGrid.className = 'tasks-grid';
-  resultsGrid.style.width = '100%';
+  // ==========================================
+  // AI 智能排程核心邏輯：使用 Priority Queue
+  // ==========================================
+  
+  // 1. 初始化優先佇列 (使用最大堆積結構對 CP 值進行排序)
+  const pq = new PriorityQueue();
 
+  // 2. 計算每個符合條件任務的 CP 值，並推入優先佇列中
+  // CP 值計算公式：報酬 (reward) / 預估工時小時數 (parseEstTime)
   matched.forEach(task => {
-    resultsGrid.appendChild(createTaskCard(task));
+    const hours = parseEstTime(task.estTime);
+    const cpValue = task.reward / hours;
+    pq.push(task, cpValue); // 將 CP 值做為優先度推入
   });
 
-  resultsContainer.appendChild(resultsGrid);
-  showToast(`成功配對出 ${matched.length} 筆最適合您的任務！`, "success");
+  // 3. 貪婪演算法指派時段，避免衝突 (不衝堂判定)
+  const occupiedSlots = new Set();
+  const scheduledTasks = [];
+  let totalEarnings = 0;
+  let totalHours = 0;
+
+  // 依序彈出 CP 值最高的任務，尋找合適且未被佔用的時段
+  while (!pq.isEmpty()) {
+    const task = pq.pop();
+    const hours = parseEstTime(task.estTime);
+    const cpValue = task.reward / hours;
+
+    // 尋找此任務支援且使用者有選取、且尚未被佔用的第一個時段
+    const availableSlot = task.timeSlots.find(s => slots.includes(s) && !occupiedSlots.has(s));
+    
+    if (availableSlot) {
+      // 標記該時段為佔用，以防止其他低 CP 值任務衝堂
+      occupiedSlots.add(availableSlot);
+      
+      // 將此任務指派到該時段中，並存入最佳排程清單
+      scheduledTasks.push({
+        ...task,
+        assignedSlot: availableSlot,
+        cpValue: cpValue
+      });
+      totalEarnings += task.reward;
+      totalHours += hours;
+    }
+  }
+
+  // 4. 對已排定任務依照週間時間順序進行排序 (以便在時間軸上漂亮呈現)
+  const getSlotScore = (slot) => {
+    const [day, time] = slot.split('-');
+    const DAYS = { 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6, 'Sun': 7 };
+    const TIMES = { 'morning': 1, 'afternoon': 2, 'evening': 3 };
+    return (DAYS[day] || 0) * 10 + (TIMES[time] || 0);
+  };
+
+  scheduledTasks.sort((a, b) => getSlotScore(a.assignedSlot) - getSlotScore(b.assignedSlot));
+
+  // 週間時段代號轉換為繁體中文顯示
+  const translateSlot = (slot) => {
+    const DAYS_ZH = { 'Mon': '週一', 'Tue': '週二', 'Wed': '週三', 'Thu': '週四', 'Fri': '週五', 'Sat': '週六', 'Sun': '週日' };
+    const TIMES_ZH = { 'morning': '上午', 'afternoon': '下午', 'evening': '晚上' };
+    const [day, time] = slot.split('-');
+    return `${DAYS_ZH[day] || day} ${TIMES_ZH[time] || time}`;
+  };
+
+  // 5. 渲染 AI 最佳排程面板與時間軸
+  let scheduleHtml = '';
+  if (scheduledTasks.length > 0) {
+    scheduleHtml = `
+      <div class="ai-schedule-dashboard">
+        <div class="ai-schedule-header">
+          <div class="ai-badge">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI 智能推薦最佳排程
+          </div>
+          <div class="ai-stats-row">
+            <div class="ai-stat-item">
+              <span class="ai-stat-lbl">預估總收益</span>
+              <span class="ai-stat-val">$${totalEarnings.toLocaleString()}</span>
+            </div>
+            <div class="ai-stat-item">
+              <span class="ai-stat-lbl">總預估工時</span>
+              <span class="ai-stat-val">${totalHours.toFixed(1)} 小時</span>
+            </div>
+            <div class="ai-stat-item">
+              <span class="ai-stat-lbl">平均 CP 值</span>
+              <span class="ai-stat-val">$${Math.round(totalEarnings / (totalHours || 1))}/小時</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-timeline">
+          <!-- 貫穿時間軸的垂直虛線 -->
+          <div class="ai-timeline-line"></div>
+          
+          ${scheduledTasks.map(task => {
+            const timeStr = translateSlot(task.assignedSlot);
+            
+            let categoryIcon = 'fa-solid fa-circle-info';
+            if (task.category === 'academic') categoryIcon = 'fa-solid fa-graduation-cap';
+            if (task.category === 'delivery') categoryIcon = 'fa-solid fa-motorcycle';
+            if (task.category === 'event') categoryIcon = 'fa-solid fa-calendar-day';
+            if (task.category === 'tech') categoryIcon = 'fa-solid fa-code';
+            if (task.category === 'design') categoryIcon = 'fa-solid fa-palette';
+            if (task.category === 'survey') categoryIcon = 'fa-solid fa-clipboard-question';
+
+            return `
+              <div class="ai-timeline-item" onclick="openDetailModal(${task.id})">
+                <div class="ai-timeline-time">
+                  <span class="time-badge">${timeStr}</span>
+                </div>
+                <div class="ai-timeline-node"></div>
+                <div class="ai-timeline-content-card">
+                  <div class="ai-card-main">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                      <span class="task-category-badge ${task.category}">
+                        <i class="${categoryIcon}"></i> ${task.categoryLabel}
+                      </span>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${task.university}</span>
+                    </div>
+                    <h4 class="ai-card-title">${task.title}</h4>
+                    <span style="font-size: 0.78rem; color: var(--text-muted);"><i class="fa-regular fa-clock"></i> 預估工時：${task.estTime}</span>
+                  </div>
+                  <div class="ai-card-reward-section">
+                    <span class="ai-card-cp">CP 值: $${Math.round(task.cpValue)}/hr</span>
+                    <span class="ai-card-price">$${task.reward}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } else {
+    scheduleHtml = `
+      <div class="empty-state" style="padding: 2.5rem 1rem; background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 2rem;">
+        <i class="fa-solid fa-calendar-xmark" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+        <h3>AI 未能排出無衝突任務</h3>
+        <p>目前篩選出的任務，時段與您的選取空檔皆有衝突（衝堂）。請嘗試選取更多空閒時段！</p>
+      </div>
+    `;
+  }
+
+  // 6. 渲染所有符合條件之候選任務 (包含衝堂任務，提供完整透明度)
+  const allMatchedHeaderHtml = `
+    <h3 style="font-size: 1.15rem; font-weight: 700; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--text-primary); border-left: 4px solid var(--secondary); padding-left: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-list-ul" style="color: var(--secondary);"></i> 所有符合條件的候選任務 (${matched.length} 筆)
+    </h3>
+  `;
+
+  resultsContainer.innerHTML = scheduleHtml + allMatchedHeaderHtml;
+
+  // 創建卡片 Grid 容器
+  const allTasksGrid = document.createElement('div');
+  allTasksGrid.className = 'tasks-grid';
+  allTasksGrid.style.width = '100%';
+  
+  matched.forEach(task => {
+    allTasksGrid.appendChild(createTaskCard(task));
+  });
+  
+  resultsContainer.appendChild(allTasksGrid);
+
+  showToast(`智能配對完成！已依 CP 值排序並排除衝堂任務。`, "success");
 }
 
 // --- 發布任務 (Demo) 邏輯 ---
@@ -936,6 +1473,55 @@ function openDetailModal(taskId) {
   document.getElementById('detail-poster-avatar').src = task.posterAvatar;
   document.getElementById('detail-poster-name').innerText = task.posterName;
 
+  // 渲染多階段步進器 (Stepper)
+  const stepperContainer = document.getElementById('detail-stepper-container');
+  if (task.stages && task.stages.length > 0 && task.status !== 'available') {
+    stepperContainer.style.display = 'block';
+    
+    const getStepStatusText = (statusClass) => {
+      if (statusClass === 'completed') return '已完成該階段';
+      if (statusClass === 'ongoing') return '進行中';
+      if (statusClass === 'submitted') return '審核中 (等待案主確認)';
+      return '尚未開始';
+    };
+
+    stepperContainer.innerHTML = `
+      <div class="task-stepper-section">
+        <h4 class="detail-description-title" style="margin-top: 0;"><i class="fa-solid fa-list-check" style="color: var(--primary-hover); margin-right: 0.25rem;"></i> 專案執行階段 (${task.stages.length} 階段)</h4>
+        <div class="stepper-list">
+          ${task.stages.map((stageName, idx) => {
+            let stepClass = 'upcoming';
+            let icon = 'fa-regular fa-circle';
+            if (idx < task.currentStageIndex || task.status === 'completed') {
+              stepClass = 'completed';
+              icon = 'fa-solid fa-circle-check';
+            } else if (idx === task.currentStageIndex) {
+              if (task.status === 'submitted') {
+                stepClass = 'submitted';
+                icon = 'fa-solid fa-spinner fa-spin';
+              } else {
+                stepClass = 'ongoing';
+                icon = 'fa-solid fa-circle-play';
+              }
+            }
+            return `
+              <div class="stepper-item ${stepClass}">
+                <div class="stepper-icon"><i class="${icon}"></i></div>
+                <div class="stepper-content">
+                  <span class="stepper-title">${stageName}</span>
+                  <span class="stepper-status-text">${getStepStatusText(stepClass)}</span>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  } else {
+    stepperContainer.style.display = 'none';
+    stepperContainer.innerHTML = '';
+  }
+
   const actionContainer = document.getElementById('detail-action-container');
   actionContainer.innerHTML = '';
 
@@ -946,18 +1532,20 @@ function openDetailModal(taskId) {
       </button>
     `;
   } else if (task.status === 'ongoing') {
+    const stageName = task.stages[task.currentStageIndex];
     actionContainer.innerHTML = `
-      <button class="btn btn-warning" onclick="handleSubmitTask(${task.id})" style="color: black;">
-        <i class="fa-solid fa-paper-plane"></i> 提交工作成果
+      <button class="btn btn-warning" onclick="handleSubmitTask(${task.id})" style="color: black; font-weight: 700;">
+        <i class="fa-solid fa-paper-plane"></i> 提交此階段成果 (第 ${task.currentStageIndex + 1}/${task.stages.length} 階段：${stageName})
       </button>
     `;
   } else if (task.status === 'submitted') {
+    const stageName = task.stages[task.currentStageIndex];
     actionContainer.innerHTML = `
-      <div style="display: flex; gap: 0.75rem; width: 100%;">
-        <button class="btn btn-outline" style="flex: 1; cursor: not-allowed;" disabled>
-          <i class="fa-solid fa-spinner fa-spin"></i> 等待發佈者審核中...
+      <div style="display: flex; gap: 0.75rem; width: 100%; flex-wrap: wrap;">
+        <button class="btn btn-outline" style="flex: 1; cursor: not-allowed; min-width: 200px;" disabled>
+          <i class="fa-solid fa-spinner fa-spin"></i> 第 ${task.currentStageIndex + 1} 階段「${stageName}」審核中...
         </button>
-        <button class="btn btn-primary" onclick="handleSimulateComplete(${task.id})" style="background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+        <button class="btn btn-primary" onclick="handleSimulateComplete(${task.id})" style="background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-weight: 700; min-width: 200px;">
           <i class="fa-solid fa-user-check"></i> 模擬案主審核通過
         </button>
       </div>
@@ -965,7 +1553,7 @@ function openDetailModal(taskId) {
   } else if (task.status === 'completed') {
     actionContainer.innerHTML = `
       <button class="btn btn-outline" style="color: var(--success); border-color: var(--success); flex-grow: 1; justify-content: center; cursor: default;" onclick="event.stopPropagation()">
-        <i class="fa-solid fa-circle-check"></i> 任務已完成，款項已撥付
+        <i class="fa-solid fa-circle-check"></i> 任務已完成，全部 ${task.stages.length} 個階段皆已核准！
       </button>
     `;
   }
@@ -978,6 +1566,7 @@ function handleAcceptTask(taskId) {
   if (!task) return;
 
   task.status = 'ongoing';
+  task.currentStageIndex = 0; // 確保重置為第 0 個階段
   saveStateToStorage();
 
   renderStats();
@@ -999,24 +1588,42 @@ function handleSubmitTask(taskId) {
   if (state.activeTab === 'profile') renderProfileSection();
 
   closeAllModals();
-  showToast(`工作成果已送出！等待案主確認款項。`, 'info');
+  const stageName = task.stages[task.currentStageIndex];
+  showToast(`第 ${task.currentStageIndex + 1} 階段成果「${stageName}」已提交！等待案主審核。`, 'info');
 }
 
 function handleSimulateComplete(taskId) {
   const task = state.tasks.find(t => t.id === taskId);
   if (!task) return;
 
-  task.status = 'completed';
-  state.user.earnings += task.reward;
-  state.user.completedCount += 1;
-  saveStateToStorage();
+  const totalStages = task.stages.length;
+  const currentIdx = task.currentStageIndex;
 
-  renderStats();
-  renderSidebarBrief();
-  if (state.activeTab === 'profile') renderProfileSection();
+  if (currentIdx < totalStages - 1) {
+    // 還有下一個階段，將進度前進，狀態恢復成進行中 (ongoing)
+    task.currentStageIndex += 1;
+    task.status = 'ongoing';
+    saveStateToStorage();
 
-  closeAllModals();
-  showToast(`案主已核准！$${task.reward} 已撥入您的帳戶！`, 'success');
+    renderStats();
+    if (state.activeTab === 'profile') renderProfileSection();
+
+    closeAllModals();
+    showToast(`案主已核准第 ${currentIdx + 1} 階段成果！請繼續執行第 ${task.currentStageIndex + 1} 階段工作。`, 'success');
+  } else {
+    // 已完成最後一個階段，結算任務為已完成，發放報酬
+    task.status = 'completed';
+    state.user.earnings += task.reward;
+    state.user.completedCount += 1;
+    saveStateToStorage();
+
+    renderStats();
+    renderSidebarBrief();
+    if (state.activeTab === 'profile') renderProfileSection();
+
+    closeAllModals();
+    showToast(`恭喜完成最後階段！$${task.reward} 已撥入您的帳戶！`, 'success');
+  }
 }
 
 // --- 個人檔案編輯與設定 ---
@@ -1093,6 +1700,16 @@ function closeAllModals() {
 function saveStateToStorage() {
   localStorage.setItem('unitask_tasks', JSON.stringify(state.tasks));
   localStorage.setItem('unitask_user', JSON.stringify(state.user));
+
+  // 同步更新至本地註冊的帳戶資料庫中
+  if (state.currentUserEmail) {
+    const accounts = getAccountsFromStorage();
+    if (accounts[state.currentUserEmail]) {
+      accounts[state.currentUserEmail].userProfile = state.user;
+      accounts[state.currentUserEmail].tasks = state.tasks;
+      localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+    }
+  }
 }
 
 function showToast(message, type = 'info') {
