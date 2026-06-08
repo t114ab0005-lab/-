@@ -46,6 +46,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`UniTask local dev server is running!`);
+  console.log(`CampusShift local dev server is running!`);
   console.log(`Available on: http://localhost:${PORT}`);
 });

@@ -1,7 +1,7 @@
 {
   "name": "student-task-platform",
   "version": "1.0.0",
-  "description": "UniTask - 大學生任務互助平台",
+  "description": "CampusShift - 大學生任務互助平台",
   "main": "index.html",
   "scripts": {
     "dev": "node server.js",

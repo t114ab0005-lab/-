@@ -1,5 +1,5 @@
 /**
- * UniTask - 大學生任務平台
+ * CampusShift - 大學生任務平台
  * Core Application Script
  */
 
@@ -444,7 +444,7 @@ function parseEstTime(estTimeStr) {
 
 // --- 本地多帳號數據存取機制 ---
 function getAccountsFromStorage() {
-  const stored = localStorage.getItem('unitask_accounts');
+  const stored = localStorage.getItem('campusshift_accounts');
   if (!stored) {
     const initialAccounts = {
       "student@ntu.edu.tw": {
@@ -458,7 +458,7 @@ function getAccountsFromStorage() {
         tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
       }
     };
-    localStorage.setItem('unitask_accounts', JSON.stringify(initialAccounts));
+    localStorage.setItem('campusshift_accounts', JSON.stringify(initialAccounts));
     return initialAccounts;
   }
   return JSON.parse(stored);
@@ -467,16 +467,16 @@ function getAccountsFromStorage() {
 function saveAccountToStorage(email, password, userProfile, tasks) {
   const accounts = getAccountsFromStorage();
   accounts[email] = { password, userProfile, tasks };
-  localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+  localStorage.setItem('campusshift_accounts', JSON.stringify(accounts));
 }
 
 // --- 初始化應用 ---
 function initApp() {
   // 檢查登入狀態與當前帳號
-  const loginFlag = localStorage.getItem('unitask_is_logged_in');
-  const currentUserEmail = localStorage.getItem('unitask_current_user_email');
-  let storedTasks = localStorage.getItem('unitask_tasks');
-  const storedUser = localStorage.getItem('unitask_user');
+  const loginFlag = localStorage.getItem('campusshift_is_logged_in');
+  const currentUserEmail = localStorage.getItem('campusshift_current_user_email');
+  let storedTasks = localStorage.getItem('campusshift_tasks');
+  const storedUser = localStorage.getItem('campusshift_user');
 
   // 初始化多帳戶資料庫
   const accounts = getAccountsFromStorage();
@@ -503,7 +503,7 @@ function initApp() {
     }
   }
   if (accountsUpdated) {
-    localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+    localStorage.setItem('campusshift_accounts', JSON.stringify(accounts));
   }
 
   // 升級 Session 狀態：若 Session 快取任務缺少 stages 欄位，同樣自動升級
@@ -521,7 +521,7 @@ function initApp() {
             matching.currentStageIndex = oldTask.currentStageIndex || 0;
           }
         });
-        localStorage.setItem('unitask_tasks', JSON.stringify(updatedTasks));
+        localStorage.setItem('campusshift_tasks', JSON.stringify(updatedTasks));
         storedTasks = JSON.stringify(updatedTasks);
       }
     } catch (e) {
@@ -530,8 +530,8 @@ function initApp() {
   }
 
   // 預填「記住我」的信箱與密碼
-  const savedEmail = localStorage.getItem('unitask_saved_email');
-  const savedPassword = localStorage.getItem('unitask_saved_password');
+  const savedEmail = localStorage.getItem('campusshift_saved_email');
+  const savedPassword = localStorage.getItem('campusshift_saved_password');
   const rememberCheckbox = document.getElementById('login-remember');
   if (savedEmail && savedPassword) {
     document.getElementById('login-email').value = savedEmail;
@@ -611,11 +611,11 @@ function performLogin(e) {
 
   // 處理「記住我」的 LocalStorage 儲存
   if (rememberCheckbox && rememberCheckbox.checked) {
-    localStorage.setItem('unitask_saved_email', email);
-    localStorage.setItem('unitask_saved_password', password);
+    localStorage.setItem('campusshift_saved_email', email);
+    localStorage.setItem('campusshift_saved_password', password);
   } else {
-    localStorage.removeItem('unitask_saved_email');
-    localStorage.removeItem('unitask_saved_password');
+    localStorage.removeItem('campusshift_saved_email');
+    localStorage.removeItem('campusshift_saved_password');
   }
 
   // 讀取帳號資料庫
@@ -634,7 +634,7 @@ function performLogin(e) {
       tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
     };
     accounts[email] = account;
-    localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+    localStorage.setItem('campusshift_accounts', JSON.stringify(accounts));
     showToast("信箱尚未註冊！已自動為您註冊新學生帳戶，並儲存登入資料。", "success");
   } else {
     // 帳戶存在，驗證密碼
@@ -646,13 +646,13 @@ function performLogin(e) {
 
   // 載入該登入帳號的專屬接案進度與個人履歷
   state.currentUserEmail = email;
-  localStorage.setItem('unitask_current_user_email', email);
+  localStorage.setItem('campusshift_current_user_email', email);
   
   state.tasks = account.tasks;
   state.user = account.userProfile;
 
   saveStateToStorage();
-  localStorage.setItem('unitask_is_logged_in', 'true');
+  localStorage.setItem('campusshift_is_logged_in', 'true');
   state.isLoggedIn = true;
 
   // 隱藏登入畫面
@@ -720,15 +720,15 @@ function performRegister(e) {
     userProfile: newUser,
     tasks: JSON.parse(JSON.stringify(INITIAL_TASKS))
   };
-  localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+  localStorage.setItem('campusshift_accounts', JSON.stringify(accounts));
 
   state.currentUserEmail = email;
-  localStorage.setItem('unitask_current_user_email', email);
+  localStorage.setItem('campusshift_current_user_email', email);
   state.user = newUser;
   state.tasks = accounts[email].tasks;
 
   saveStateToStorage();
-  localStorage.setItem('unitask_is_logged_in', 'true');
+  localStorage.setItem('campusshift_is_logged_in', 'true');
   state.isLoggedIn = true;
 
   // 隱藏登入畫面
@@ -742,23 +742,23 @@ function performRegister(e) {
   renderSidebarBrief();
   renderStats();
   switchTab('lobby');
-  showToast("註冊成功！帳戶已安全儲存，歡迎加入 UniTask。", "success");
+  showToast("註冊成功！帳戶已安全儲存，歡迎加入 CampusShift。", "success");
 }
 
 // 快速體驗訪客登入
 function quickGuestLogin() {
   // 每次訪客登入時，清除當前帳號快取，但訪客不會存入 accounts 資料庫中
   state.currentUserEmail = null;
-  localStorage.removeItem('unitask_current_user_email');
+  localStorage.removeItem('campusshift_current_user_email');
   
-  localStorage.removeItem('unitask_tasks');
-  localStorage.removeItem('unitask_user');
+  localStorage.removeItem('campusshift_tasks');
+  localStorage.removeItem('campusshift_user');
   
   state.tasks = JSON.parse(JSON.stringify(INITIAL_TASKS));
   state.user = JSON.parse(JSON.stringify(INITIAL_USER));
   
   saveStateToStorage();
-  localStorage.setItem('unitask_is_logged_in', 'true');
+  localStorage.setItem('campusshift_is_logged_in', 'true');
   state.isLoggedIn = true;
 
   const loginOverlay = document.getElementById('login-screen');
@@ -776,8 +776,8 @@ function quickGuestLogin() {
 
 function handleLogout() {
   // 清除登入標籤與目前使用者快取
-  localStorage.setItem('unitask_is_logged_in', 'false');
-  localStorage.removeItem('unitask_current_user_email');
+  localStorage.setItem('campusshift_is_logged_in', 'false');
+  localStorage.removeItem('campusshift_current_user_email');
   state.isLoggedIn = false;
   state.currentUserEmail = null;
   state.user = JSON.parse(JSON.stringify(INITIAL_USER));
@@ -788,8 +788,8 @@ function handleLogout() {
   loginOverlay.style.display = 'flex';
   
   // 清除當前 Session 快取，但保留 accounts 資料庫
-  localStorage.removeItem('unitask_tasks');
-  localStorage.removeItem('unitask_user');
+  localStorage.removeItem('campusshift_tasks');
+  localStorage.removeItem('campusshift_user');
 
   renderSidebarBrief();
   renderStats();
@@ -1698,8 +1698,8 @@ function closeAllModals() {
 }
 
 function saveStateToStorage() {
-  localStorage.setItem('unitask_tasks', JSON.stringify(state.tasks));
-  localStorage.setItem('unitask_user', JSON.stringify(state.user));
+  localStorage.setItem('campusshift_tasks', JSON.stringify(state.tasks));
+  localStorage.setItem('campusshift_user', JSON.stringify(state.user));
 
   // 同步更新至本地註冊的帳戶資料庫中
   if (state.currentUserEmail) {
@@ -1707,7 +1707,7 @@ function saveStateToStorage() {
     if (accounts[state.currentUserEmail]) {
       accounts[state.currentUserEmail].userProfile = state.user;
       accounts[state.currentUserEmail].tasks = state.tasks;
-      localStorage.setItem('unitask_accounts', JSON.stringify(accounts));
+      localStorage.setItem('campusshift_accounts', JSON.stringify(accounts));
     }
   }
 }
