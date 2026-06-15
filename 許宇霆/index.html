@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusShift (時間變現曆) - 大學生任務互助平台</title>
+  <meta name="description" content="專為大學生設計的任務接取與互助平台，包含學術輔導、校園跑腿、技術外包、設計創意等豐富任務。">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+          },
+          colors: {
+            darkbg: '#060913',
+            surface: '#0f172a',
+            primary: '#8b5cf6',
+            secondary: '#06b6d4'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-darkbg text-slate-100 font-sans min-h-screen overflow-x-hidden selection:bg-purple-500/30">
+
+  <!-- Background Ambient Glow -->
+  <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600/10 blur-[120px]"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-600/10 blur-[120px]"></div>
+  </div>
+
+  <!-- LOGIN & REGISTER SCREEN OVERLAY -->
+  <div id="login-screen" class="fixed inset-0 z-[100] bg-darkbg/90 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300">
+    <div class="w-full max-w-md p-8 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-2xl relative overflow-hidden">
+      <!-- Decorative element -->
+      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-purple-500"></div>
+      
+      <div class="flex items-center gap-3 mb-8">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(139,92,246,0.4)]">U</div>
+        <div>
+          <h2 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-300">CampusShift</h2>
+          <p class="text-xs text-slate-400">時間變現曆</p>
+        </div>
+      </div>
+      
+      <h3 id="login-modal-title" class="text-xl font-bold mb-6 text-white">學生接案登入</h3>
+      
+      <!-- LOGIN FORM -->
+      <div id="login-form-box">
+        <form id="email-login-form" class="space-y-4">
+          <div>
+            <label for="login-email" class="block text-sm font-medium text-slate-300 mb-1">學校信箱 (.edu.tw)</label>
+            <input type="email" id="login-email" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="例如：student@ntu.edu.tw" required value="student@ntu.edu.tw">
+          </div>
+          <div>
+            <label for="login-password" class="block text-sm font-medium text-slate-300 mb-1">密碼</label>
+            <input type="password" id="login-password" class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="請輸入密碼" required value="password">
+          </div>
+          <button type="submit" class="w-full py-3 mt-2 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-400 hover:to-purple-600 shadow-[0_4px_15px_rgba(139,92,246,0.3)] hover:shadow-[0_6px_20px_rgba(139,92,246,0.4)] transition-all flex justify-center items-center gap-2">
+            <i class="fa-solid fa-right-to-bracket"></i> 登入系統
+          </button>
+        </form>
+        
+        <div class="flex items-center my-6">
+          <div class="flex-grow h-px bg-white/10"></div>
+          <span class="px-3 text-xs text-slate-500">或</span>
+          <div class="flex-grow h-px bg-white/10"></div>
+        </div>
+        
+        <button id="guest-login-btn" class="w-full py-3 rounded-xl font-bold text-cyan-400 bg-white/5 border border-cyan-500/30 hover:bg-cyan-500/10 transition-all flex justify-center items-center gap-2">
+          <i class="fa-solid fa-bolt"></i> 訪客登入 / 學生快速體驗
+        </button>
+        
+        <p class="text-center mt-6 text-sm text-slate-400">還沒有帳號？ <span id="switch-to-register" class="text-purple-400 cursor-pointer hover:underline">切換至註冊</span></p>
+      </div>
+      
+      <!-- REGISTER FORM -->
+      <div id="register-form-box" class="hidden">
+        <form id="student-register-form" class="space-y-4">
+          <div>
+            <label for="reg-name" class="block text-sm font-medium text-slate-300 mb-1">學生姓名</label>
+            <input type="text" id="reg-name" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="例如：王小明" required>
+          </div>
+          <div>
+            <label for="reg-email" class="block text-sm font-medium text-slate-300 mb-1">學校學術信箱 (.edu.tw)</label>
+            <input type="email" id="reg-email" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="例如：xiaoming@ntu.edu.tw" required>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="reg-school" class="block text-sm font-medium text-slate-300 mb-1">就讀學校</label>
+              <input type="text" id="reg-school" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="如：臺灣大學" required>
+            </div>
+            <div>
+              <label for="reg-major" class="block text-sm font-medium text-slate-300 mb-1">科系</label>
+              <input type="text" id="reg-major" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="如：資工系" required>
+            </div>
+          </div>
+          <div>
+            <label for="reg-year" class="block text-sm font-medium text-slate-300 mb-1">年級</label>
+            <select id="reg-year" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all">
+              <option value="大一">大一</option>
+              <option value="大二">大二</option>
+              <option value="大三">大三</option>
+              <option value="大四">大四</option>
+              <option value="碩士班">碩士班</option>
+              <option value="博士班">博士班</option>
+            </select>
+          </div>
+          <div>
+            <label for="reg-password" class="block text-sm font-medium text-slate-300 mb-1">設定密碼</label>
+            <input type="password" id="reg-password" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all placeholder:text-slate-500" placeholder="請輸入密碼" required>
+          </div>
+          
+          <button type="submit" class="w-full py-3 mt-2 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-400 hover:to-purple-600 shadow-[0_4px_15px_rgba(139,92,246,0.3)] transition-all flex justify-center items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> 註冊並登入
+          </button>
+        </form>
+        
+        <p class="text-center mt-6 text-sm text-slate-400">已經有帳號了？ <span id="switch-to-login" class="text-purple-400 cursor-pointer hover:underline">切換至登入</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Shell Container -->
+  <div class="flex min-h-screen">
+
+    <!-- 1. Sidebar Navigation -->
+    <aside class="w-[280px] bg-slate-900/60 backdrop-blur-md border-r border-white/10 flex flex-col p-6 fixed h-screen z-40 shadow-xl">
+      <div class="flex items-center gap-3 mb-12">
+        <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-xl shadow-[0_0_15px_rgba(139,92,246,0.4)]">C</div>
+        <span class="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-300 tracking-wide truncate">CampusShift</span>
+      </div>
+
+      <ul class="flex flex-col gap-2 flex-grow">
+        <li class="nav-item group cursor-pointer flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 font-medium transition-all hover:bg-white/5 hover:text-white" data-tab="lobby">
+          <i class="fa-solid fa-compass w-6 text-center group-[.active]:text-purple-400"></i>
+          <span>任務大廳</span>
+        </li>
+        <li class="nav-item group cursor-pointer flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 font-medium transition-all hover:bg-white/5 hover:text-white" data-tab="quick-match">
+          <i class="fa-solid fa-bolt w-6 text-center group-[.active]:text-purple-400"></i>
+          <span>一鍵空檔速配</span>
+        </li>
+        <li class="nav-item group cursor-pointer flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 font-medium transition-all hover:bg-white/5 hover:text-white" data-tab="post-demo">
+          <i class="fa-solid fa-circle-plus w-6 text-center group-[.active]:text-purple-400"></i>
+          <span>發布任務 (Demo)</span>
+        </li>
+        <li class="nav-item group cursor-pointer flex items-center gap-4 px-4 py-3 rounded-xl text-slate-400 font-medium transition-all hover:bg-white/5 hover:text-white" data-tab="profile">
+          <i class="fa-solid fa-user-gear w-6 text-center group-[.active]:text-purple-400"></i>
+          <span>個人資料</span>
+        </li>
+        
+        <!-- Sidebar Logout item -->
+        <li id="sidebar-logout-item" class="mt-auto border-t border-white/10 pt-6 cursor-pointer flex items-center gap-4 px-4 py-3 rounded-xl text-rose-400 font-medium transition-all hover:bg-rose-500/10">
+          <i class="fa-solid fa-right-from-bracket w-6 text-center"></i>
+          <span>登出系統</span>
+        </li>
+      </ul>
+
+      <!-- User Brief Card -->
+      <div class="mt-4 p-3 rounded-xl border border-white/10 bg-white/5 flex items-center gap-3 cursor-pointer hover:bg-white/10 hover:border-purple-500/30 transition-all" onclick="switchTab('profile')">
+        <img id="sidebar-avatar" class="w-11 h-11 rounded-full border-2 border-purple-500 object-cover bg-slate-800" src="" alt="頭像">
+        <div class="flex flex-col overflow-hidden">
+          <span id="sidebar-name" class="font-semibold text-sm text-white truncate">讀取中...</span>
+          <span id="sidebar-school" class="text-xs text-slate-400 truncate">讀取中...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. Main Content Area -->
+    <main class="ml-[280px] flex-grow flex flex-col gap-8 p-10 min-h-screen">
+
+      <!-- Top Header -->
+      <header class="flex justify-between items-center gap-8">
+        <div>
+          <h1 id="header-main-title" class="text-3xl font-black mb-1 bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 tracking-tight">任務大廳</h1>
+          <p id="header-main-desc" class="text-slate-400 text-sm">瀏覽最新的校園互助任務，接取合適的工作賺取報酬！</p>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <!-- Interactive Search Bar -->
+          <div id="search-wrapper-container" class="relative w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="task-search" class="w-full py-2.5 pl-11 pr-4 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder:text-slate-500 transition-all" placeholder="搜尋任務名稱、關鍵字...">
+          </div>
+
+          <button class="px-5 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 shadow-[0_4px_15px_rgba(139,92,246,0.3)] transition-all flex items-center gap-2" onclick="switchTab('post-demo')">
+            <i class="fa-solid fa-circle-plus"></i> 發佈任務
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Statistics Grid -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center gap-5 relative overflow-hidden group hover:-translate-y-1 transition-all">
+          <div class="absolute top-0 left-0 w-full h-1 bg-purple-500"></div>
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl"><i class="fa-solid fa-briefcase"></i></div>
+          <div class="flex flex-col">
+            <span id="stat-available" class="text-3xl font-black text-white leading-tight">0</span>
+            <span class="text-xs font-medium text-slate-400">開放任務</span>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center gap-5 relative overflow-hidden cursor-pointer hover:-translate-y-1 hover:border-cyan-500/30 transition-all" onclick="navigateToProfileTab('active')">
+          <div class="absolute top-0 left-0 w-full h-1 bg-cyan-500"></div>
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl"><i class="fa-solid fa-spinner"></i></div>
+          <div class="flex flex-col">
+            <span id="stat-active" class="text-3xl font-black text-white leading-tight">0</span>
+            <span class="text-xs font-medium text-slate-400">進行中任務</span>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center gap-5 relative overflow-hidden cursor-pointer hover:-translate-y-1 hover:border-green-500/30 transition-all" onclick="navigateToProfileTab('history')">
+          <div class="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
+          <div class="w-12 h-12 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center text-xl"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="flex flex-col">
+            <span id="stat-completed" class="text-3xl font-black text-white leading-tight">0</span>
+            <span class="text-xs font-medium text-slate-400">已完成任務</span>
+          </div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex items-center gap-5 relative overflow-hidden hover:-translate-y-1 transition-all">
+          <div class="absolute top-0 left-0 w-full h-1 bg-amber-500"></div>
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl"><i class="fa-solid fa-wallet"></i></div>
+          <div class="flex flex-col">
+            <span id="stat-earnings" class="text-3xl font-black text-white leading-tight">$0</span>
+            <span class="text-xs font-medium text-slate-400">累積收益</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filtering Dashboard -->
+      <section id="filter-panel-container" class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col gap-5">
+        <div class="flex flex-wrap items-end gap-6">
+          <!-- Category Filter Tags -->
+          <div class="flex flex-col gap-2 flex-grow min-w-[200px]">
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">任務分類</label>
+            <div class="flex flex-wrap gap-2">
+              <span class="category-tag active px-4 py-2 rounded-full border border-purple-500 bg-gradient-to-r from-purple-500/20 to-cyan-500/10 text-white text-xs font-medium cursor-pointer shadow-[0_4px_10px_rgba(139,92,246,0.1)] transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="all">
+                <i class="fa-solid fa-globe"></i> 全部
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="academic">
+                <i class="fa-solid fa-graduation-cap"></i> 學術輔導
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="delivery">
+                <i class="fa-solid fa-motorcycle"></i> 校園跑腿
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="event">
+                <i class="fa-solid fa-calendar-day"></i> 活動協助
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="tech">
+                <i class="fa-solid fa-code"></i> 技術開發
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="design">
+                <i class="fa-solid fa-palette"></i> 設計創意
+              </span>
+              <span class="category-tag px-4 py-2 rounded-full border border-white/10 bg-white/5 text-slate-400 hover:text-white hover:border-purple-400 text-xs font-medium cursor-pointer transition-all flex items-center gap-1.5 whitespace-nowrap" data-category="survey">
+                <i class="fa-solid fa-clipboard-question"></i> 問卷研究
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-end gap-6 mt-2">
+          <!-- Price Slider -->
+          <div class="flex flex-col gap-2 flex-grow">
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">報酬金額下限</label>
+            <div class="flex items-center gap-4">
+              <input type="range" id="reward-slider" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-purple-500" min="0" max="5000" step="50" value="0">
+              <span id="reward-value-display" class="font-bold text-sm text-cyan-400 min-w-[60px] text-right">$0+</span>
+            </div>
+          </div>
+
+          <!-- School Filter -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">學校範圍</label>
+            <select id="school-select" class="px-4 py-2 bg-slate-800 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-white cursor-pointer">
+              <option value="all">所有學校</option>
+              <option value="my">我的學校</option>
+              <option value="other">其他學校</option>
+            </select>
+          </div>
+
+          <!-- Sort Select -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">排序方式</label>
+            <select id="sort-select" class="px-4 py-2 bg-slate-800 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 text-white cursor-pointer">
+              <option value="newest">最新發佈</option>
+              <option value="reward-desc">金額由高到低</option>
+              <option value="reward-asc">金額由低到高</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 1: Task Lobby View -->
+      <section id="lobby-view">
+        <div id="tasks-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Task cards injected here -->
+        </div>
+      </section>
+
+      <!-- View 2: One-click Free Time Matching View -->
+      <section id="quick-match-view" class="hidden space-y-8">
+        <div class="p-8 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col gap-8">
+          
+          <!-- 0. NLP Search Bar -->
+          <div class="flex flex-col gap-3 pb-6 border-b border-white/10">
+            <label class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> 智能語意速配 (Beta)</label>
+            <div class="flex flex-wrap md:flex-nowrap gap-3">
+              <input type="text" id="nlp-search-input" class="flex-grow w-full md:w-auto px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 text-white transition-all placeholder:text-slate-500" placeholder="試著輸入：「禮拜三下午想接個設計案，報酬希望有1000元以上」">
+              <button class="px-6 py-3 rounded-xl font-bold text-slate-900 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)] transition-all whitespace-nowrap flex items-center justify-center gap-2" onclick="parseNaturalLanguageQuery()">
+                <i class="fa-solid fa-brain"></i> 智慧解析
+              </button>
+            </div>
+          </div>
+
+          <!-- 1. Calendar Grid Matrix -->
+          <div class="flex flex-col gap-3">
+            <label class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-regular fa-calendar-check text-purple-400"></i> 請選取您的週間空閒時段 (可複選)</label>
+            <div class="overflow-x-auto rounded-xl border border-white/10 bg-slate-900">
+              <table class="w-full text-sm text-center">
+                <thead class="bg-white/5 border-b border-white/10 text-slate-300">
+                  <tr>
+                    <th class="py-3 px-4 font-semibold text-left">時段 / 星期</th>
+                    <th class="py-3 px-2 font-semibold">週一</th>
+                    <th class="py-3 px-2 font-semibold">週二</th>
+                    <th class="py-3 px-2 font-semibold">週三</th>
+                    <th class="py-3 px-2 font-semibold">週四</th>
+                    <th class="py-3 px-2 font-semibold">週五</th>
+                    <th class="py-3 px-2 font-semibold">週六</th>
+                    <th class="py-3 px-2 font-semibold">週日</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="py-3 px-4 font-medium text-slate-400 text-left">上午 <span class="text-xs text-slate-500">(08:00-12:00)</span></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Mon-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Tue-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Wed-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Thu-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Fri-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sat-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sun-morning"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                  </tr>
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="py-3 px-4 font-medium text-slate-400 text-left">下午 <span class="text-xs text-slate-500">(12:00-18:00)</span></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Mon-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Tue-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Wed-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Thu-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Fri-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sat-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sun-afternoon"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                  </tr>
+                  <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="py-3 px-4 font-medium text-slate-400 text-left">晚上 <span class="text-xs text-slate-500">(18:00-22:00)</span></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Mon-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Tue-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Wed-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Thu-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Fri-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sat-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                    <td class="calendar-cell p-1 cursor-pointer transition-colors hover:bg-purple-500/20 rounded" data-slot="Sun-evening"><div class="h-8 w-full rounded border border-white/5 bg-white/5"></div></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 2. Tag Buttons Group -->
+          <div class="flex flex-col gap-3">
+            <label class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-tags text-cyan-400"></i> 選擇您感興趣的任務類型標籤</label>
+            <div class="flex flex-wrap gap-3">
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="跑腿">#跑腿</button>
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="文書">#文書</button>
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="體力活">#體力活</button>
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="學術">#學術</button>
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="設計">#設計</button>
+              <button class="match-tag-btn px-5 py-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:border-purple-400 hover:text-white transition-all font-medium" data-tag="技術">#技術</button>
+            </div>
+          </div>
+
+          <!-- 3. Minimum Reward Slider -->
+          <div class="flex flex-col gap-3">
+            <label class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-sack-dollar text-green-400"></i> 設定最低報酬門檻</label>
+            <div class="flex items-center gap-4 bg-white/5 p-4 rounded-xl border border-white/10">
+              <input type="range" id="match-reward-slider" class="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-green-500" min="0" max="5000" step="50" value="0">
+              <span id="match-reward-display" class="font-bold text-lg text-green-400 min-w-[80px] text-right">$0+</span>
+            </div>
+          </div>
+
+          <!-- 4. Submit Match Button -->
+          <div class="flex gap-4 pt-2">
+            <button id="run-match-btn" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 shadow-[0_4px_15px_rgba(139,92,246,0.3)] transition-all flex justify-center items-center gap-2 text-lg">
+              <i class="fa-solid fa-bolt"></i> 開始一鍵空檔速配
+            </button>
+            <button class="px-6 py-3.5 rounded-xl font-bold text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10 transition-all" onclick="resetQuickMatchUI()">
+              重設條件
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Matching Results Grid -->
+        <div>
+          <h2 class="text-xl font-bold mb-4 text-white border-l-4 border-purple-500 pl-3">
+            速配推薦任務 <span class="text-xs font-normal text-slate-400 ml-2">(依 CP 值最高排序)</span>
+          </h2>
+          <div id="quick-match-results" class="min-h-[200px]">
+            <!-- Results injected here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- View 3: Publish Task (Demo) View -->
+      <section id="post-demo-view" class="hidden">
+        <div class="max-w-2xl mx-auto p-8 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl">
+          <div class="text-center border-b border-white/10 pb-6 mb-6">
+            <h2 class="text-2xl font-black text-white mb-2">模擬發布任務</h2>
+            <p class="text-sm text-slate-400">已為您預先填妥假資料。點擊下方按鈕即可一鍵發布並切換至任務大廳！</p>
+          </div>
+
+          <form id="demo-publish-form" class="space-y-5">
+            <div>
+              <label for="demo-title" class="block text-sm font-medium text-slate-300 mb-1">任務標題</label>
+              <input type="text" id="demo-title" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all" required placeholder="任務標題">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="demo-category" class="block text-sm font-medium text-slate-300 mb-1">任務分類</label>
+                <select id="demo-category" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all">
+                  <option value="academic">學術輔導</option>
+                  <option value="delivery" selected>校園跑腿</option>
+                  <option value="event">活動協助</option>
+                  <option value="tech">技術開發</option>
+                  <option value="design">設計創意</option>
+                  <option value="survey">問卷研究</option>
+                </select>
+              </div>
+              <div>
+                <label for="demo-reward" class="block text-sm font-medium text-slate-300 mb-1">任務報酬 (元)</label>
+                <input type="number" id="demo-reward" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all" required min="10" placeholder="報酬金額">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="demo-est-time" class="block text-sm font-medium text-slate-300 mb-1">預計工時</label>
+                <input type="text" id="demo-est-time" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all" required placeholder="預估工時">
+              </div>
+              <div>
+                <label for="demo-deadline" class="block text-sm font-medium text-slate-300 mb-1">任務截止日期</label>
+                <input type="date" id="demo-deadline" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all" required>
+              </div>
+            </div>
+
+            <div>
+              <label for="demo-desc" class="block text-sm font-medium text-slate-300 mb-1">詳細說明與要求</label>
+              <textarea id="demo-desc" class="w-full px-4 py-3 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white transition-all min-h-[120px]" required placeholder="任務描述"></textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 mt-2 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 shadow-[0_4px_15px_rgba(139,92,246,0.3)] transition-all flex justify-center items-center gap-2 text-lg">
+              <i class="fa-solid fa-paper-plane"></i> 一鍵模擬發布
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- View 4: Profile View -->
+      <section id="profile-view" class="hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8 items-start">
+          
+          <!-- Left side: Personal info card -->
+          <div class="p-8 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col items-center text-center relative">
+            <div class="relative mb-6">
+              <img id="profile-avatar" class="w-32 h-32 rounded-full border-4 border-purple-500 object-cover shadow-[0_0_25px_rgba(139,92,246,0.3)] bg-slate-800" src="" alt="個人大頭貼">
+              <div id="profile-rating" class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-amber-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg border-2 border-slate-900 whitespace-nowrap">
+                <i class="fa-solid fa-star"></i> 5.0
+              </div>
+            </div>
+            
+            <h2 id="profile-name" class="text-2xl font-black text-white mb-1">學生姓名</h2>
+            <div id="profile-identity" class="text-sm font-medium text-slate-400 mb-6">學校科系等級</div>
+
+            <div class="flex w-full divide-x divide-white/10 border-y border-white/10 py-4 mb-6">
+              <div class="flex-1 flex flex-col">
+                <span id="profile-stat-completed" class="text-2xl font-black text-white">0</span>
+                <span class="text-xs text-slate-400 mt-1">完成任務</span>
+              </div>
+              <div class="flex-1 flex flex-col">
+                <span id="profile-stat-earnings" class="text-2xl font-black text-green-400">$0</span>
+                <span class="text-xs text-slate-400 mt-1">接案收益</span>
+              </div>
+            </div>
+
+            <div class="w-full text-left mb-6">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">個人自傳</div>
+              <div id="profile-bio" class="text-sm text-slate-300 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/5">介紹載入中...</div>
+            </div>
+
+            <div class="w-full text-left mb-8">
+              <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">專業技能</div>
+              <div id="profile-skills" class="flex flex-wrap gap-2">
+                <!-- Skill badges injected here -->
+              </div>
+            </div>
+
+            <!-- Profile actions -->
+            <button class="w-full py-3 rounded-xl font-bold text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex justify-center items-center gap-2 mb-3" onclick="openEditProfileModal()">
+              <i class="fa-solid fa-user-pen"></i> 編輯個人資料
+            </button>
+            
+            <button id="profile-logout-btn" class="w-full py-3 rounded-xl font-bold text-rose-400 bg-transparent border border-rose-500/30 hover:bg-rose-500/10 transition-all flex justify-center items-center gap-2">
+              <i class="fa-solid fa-right-from-bracket"></i> 登出帳戶
+            </button>
+          </div>
+
+          <!-- Right side: History/Active tabs and lists -->
+          <div class="flex flex-col">
+            <div class="flex border-b border-white/10 mb-6">
+              <button class="tab-btn active pb-4 px-6 font-bold text-purple-400 border-b-2 border-purple-500 transition-colors" data-subtab="history">任務歷史紀錄</button>
+              <button class="tab-btn pb-4 px-6 font-medium text-slate-400 hover:text-slate-200 transition-colors" data-subtab="active">進行中工作</button>
+            </div>
+
+            <div id="profile-history-container" class="space-y-4">
+              <!-- Completed or ongoing tasks history items -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: Task Detail and Action Window -->
+  <div id="detail-modal" class="modal-overlay fixed inset-0 z-50 bg-darkbg/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="flex justify-between items-center p-6 border-b border-white/10">
+        <h3 class="text-lg font-bold text-white">任務詳情</h3>
+        <button class="modal-close w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow">
+        <h2 id="detail-title" class="text-2xl font-black text-white mb-4">任務標題載入中...</h2>
+        
+        <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5 mb-6">
+          <div class="flex flex-col">
+            <span class="text-xs text-slate-400 mb-1">完成報酬</span>
+            <span id="detail-reward" class="text-2xl font-black text-green-400">$0</span>
+          </div>
+          <span id="detail-category-badge" class="px-3 py-1 rounded-full text-sm font-bold border">分類標籤</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-school"></i></div>
+            <div class="flex flex-col overflow-hidden">
+              <span class="text-xs text-slate-400">發佈學校</span>
+              <span id="detail-school" class="text-sm font-bold text-white truncate">載入中</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+            <div class="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="fa-regular fa-clock"></i></div>
+            <div class="flex flex-col overflow-hidden">
+              <span class="text-xs text-slate-400">預估工作時間</span>
+              <span id="detail-est-time" class="text-sm font-bold text-white truncate">載入中</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-regular fa-calendar-check"></i></div>
+            <div class="flex flex-col overflow-hidden">
+              <span class="text-xs text-slate-400">截止日期</span>
+              <span id="detail-deadline" class="text-sm font-bold text-white truncate">載入中</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5">
+            <div class="w-10 h-10 rounded-lg bg-green-500/20 text-green-400 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="flex flex-col overflow-hidden">
+              <span class="text-xs text-slate-400">信譽保障</span>
+              <span class="text-sm font-bold text-white truncate">官方核實撥款</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h4 class="text-sm font-bold text-slate-300 mb-2 border-l-2 border-purple-500 pl-2">工作說明與要求</h4>
+          <p id="detail-desc" class="text-sm text-slate-400 leading-relaxed bg-white/5 p-4 rounded-xl border border-white/5">工作內容詳細描述載入中...</p>
+        </div>
+
+        <div id="detail-phases-container" class="mb-6 hidden">
+          <!-- Phases injected here -->
+        </div>
+
+        <div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-slate-800">
+          <img id="detail-poster-avatar" class="w-12 h-12 rounded-full border border-white/20 bg-slate-700" src="" alt="發佈者頭像">
+          <div class="flex flex-col">
+            <span id="detail-poster-name" class="font-bold text-white">發佈人姓名</span>
+            <span class="text-xs text-slate-400">任務案主</span>
+          </div>
+        </div>
+      </div>
+      <div id="detail-action-container" class="p-6 border-t border-white/10 bg-slate-900/80">
+        <!-- Actions buttons injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Edit Profile Form -->
+  <div id="edit-profile-modal" class="modal-overlay fixed inset-0 z-50 bg-darkbg/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="flex justify-between items-center p-6 border-b border-white/10">
+        <h3 class="text-lg font-bold text-white">編輯個人檔案</h3>
+        <button class="modal-close w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="edit-profile-form" class="flex flex-col flex-grow overflow-hidden">
+        <div class="p-6 overflow-y-auto space-y-5">
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">選擇虛擬頭像</label>
+            <div id="avatar-selection-grid" class="flex flex-wrap gap-2">
+              <!-- Avatar items injected here -->
+            </div>
+          </div>
+
+          <div>
+            <label for="edit-name" class="block text-sm font-medium text-slate-300 mb-1">學生姓名</label>
+            <input type="text" id="edit-name" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white" required placeholder="例如：陳大文">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="edit-school" class="block text-sm font-medium text-slate-300 mb-1">就讀學校</label>
+              <input type="text" id="edit-school" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white" required placeholder="例如：國立臺灣大學">
+            </div>
+            <div>
+              <label for="edit-major" class="block text-sm font-medium text-slate-300 mb-1">就讀科系</label>
+              <input type="text" id="edit-major" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white" required placeholder="例如：資訊工程學系">
+            </div>
+          </div>
+
+          <div>
+            <label for="edit-year" class="block text-sm font-medium text-slate-300 mb-1">年級</label>
+            <select id="edit-year" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white">
+              <option value="大一">大一</option>
+              <option value="大二">大二</option>
+              <option value="大三">大三</option>
+              <option value="大四">大四</option>
+              <option value="碩士班">碩士班</option>
+              <option value="博士班">博士班</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="edit-bio" class="block text-sm font-medium text-slate-300 mb-1">個人簡介 / 自傳</label>
+            <textarea id="edit-bio" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white min-h-[100px]" placeholder="寫點自我介紹吧！"></textarea>
+          </div>
+
+          <div>
+            <label for="edit-skills" class="block text-sm font-medium text-slate-300 mb-1">技能標籤 (英文逗號隔開)</label>
+            <input type="text" id="edit-skills" class="w-full px-4 py-2 bg-slate-800 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 text-white" placeholder="例如：JavaScript, Python, 英文檢定">
+          </div>
+
+        </div>
+        <div class="p-6 border-t border-white/10 bg-slate-900 flex justify-end gap-3 mt-auto">
+          <button type="button" class="modal-close px-5 py-2 rounded-xl font-bold text-slate-300 bg-white/5 hover:bg-white/10 transition-colors">取消</button>
+          <button type="submit" class="px-5 py-2 rounded-xl font-bold text-white bg-purple-600 hover:bg-purple-500 transition-colors shadow-lg">儲存變更</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+  <!-- Core App Logic -->
+  <script src="data/jobs.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
