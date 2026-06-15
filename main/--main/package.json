@@ -1,0 +1,14 @@
+{
+  "name": "student-task-platform",
+  "version": "1.0.0",
+  "description": "CampusShift - 大學生任務互助平台",
+  "main": "index.html",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "node test-mock.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
