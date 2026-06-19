@@ -918,13 +918,14 @@ class PriorityQueue {
     this.items = [];
   }
 
+  // 時間複雜度：O(N) (陣列插入)
   enqueue(task, cpValue) {
     const qElement = { task, cpValue };
     let added = false;
     
-    // 依 CP 值尋找插入點
+    // 依 CP 值尋找插入點 (由小排到大，讓最大值保持在陣列尾端)
     for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].cpValue < qElement.cpValue) {
+      if (this.items[i].cpValue > qElement.cpValue) {
         this.items.splice(i, 0, qElement);
         added = true;
         break;
@@ -936,9 +937,11 @@ class PriorityQueue {
     }
   }
 
+  // 取出最高 CP 值的任務
+  // 時間複雜度：O(1) (從陣列尾端 pop 取出)
   dequeue() {
     if (this.isEmpty()) return null;
-    return this.items.shift();
+    return this.items.pop();
   }
 
   isEmpty() {
