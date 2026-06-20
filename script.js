@@ -35,7 +35,7 @@ const AVATAR_OPTIONS = [
 ];
 
 // --- 資料版本控制 (當資料結構更新時，自動清除舊快取) ---
-const DATA_VERSION = "1.2";
+const DATA_VERSION = "1.3";
 
 // --- 系統狀態管理 ---
 let state = {
@@ -373,8 +373,8 @@ function quickGuestLogin() {
   state.user = JSON.parse(JSON.stringify(INITIAL_USER));
   
   saveStateToStorage();
-  localStorage.setItem('unitask_is_logged_in', 'true');
-  state.isLoggedIn = true;
+  localStorage.setItem('unitask_is_logged_in', 'guest');
+  state.isLoggedIn = false;
 
   const loginOverlay = document.getElementById('login-screen');
   if (loginOverlay) {
@@ -421,14 +421,37 @@ function renderSidebarBrief() {
 
 function renderStats() {
   const availableCount = state.tasks.filter(t => t.status === 'available').length;
-  const activeCount = state.tasks.filter(t => t.status === 'ongoing').length;
-  const completedCount = state.user.completedCount || 0;
-  const totalEarnings = state.user.earnings || 0;
-
   document.getElementById('stat-available').innerText = availableCount;
-  document.getElementById('stat-active').innerText = activeCount;
-  document.getElementById('stat-completed').innerText = completedCount;
-  document.getElementById('stat-earnings').innerText = `$${totalEarnings.toLocaleString()}`;
+
+  const statActiveEl = document.getElementById('stat-active');
+  const statCompletedEl = document.getElementById('stat-completed');
+  const statEarningsEl = document.getElementById('stat-earnings');
+
+  if (state.isLoggedIn) {
+    const activeCount = state.tasks.filter(t => t.status === 'ongoing').length;
+    const completedCount = state.user.completedCount || 0;
+    const totalEarnings = state.user.earnings || 0;
+
+    statActiveEl.innerHTML = activeCount;
+    statActiveEl.className = "text-3xl font-black text-white leading-tight";
+    
+    statCompletedEl.innerHTML = completedCount;
+    statCompletedEl.className = "text-3xl font-black text-white leading-tight";
+    
+    statEarningsEl.innerHTML = `$${totalEarnings.toLocaleString()}`;
+    statEarningsEl.className = "text-3xl font-black text-white leading-tight";
+  } else {
+    const promptHtml = `<span class="text-sm text-purple-400 font-bold bg-purple-500/10 px-2 py-1 rounded border border-purple-500/30" onclick="openLoginScreen(); event.stopPropagation();">需登入查看</span>`;
+    
+    statActiveEl.innerHTML = promptHtml;
+    statActiveEl.className = "mt-1 mb-2 inline-block";
+    
+    statCompletedEl.innerHTML = promptHtml;
+    statCompletedEl.className = "mt-1 mb-2 inline-block";
+    
+    statEarningsEl.innerHTML = promptHtml;
+    statEarningsEl.className = "mt-1 mb-2 inline-block";
+  }
 }
 
 function renderTasksList() {
@@ -550,8 +573,21 @@ function renderProfileSection() {
     skillsContainer.innerHTML = `<span class="text-gray-400 text-xs">暫無技能標籤</span>`;
   }
 
-  renderProfileTabsList();
-  setTimeout(renderEarningsChart, 50);
+  const earningsCard = document.getElementById('profile-earnings-card');
+  const tabsCard = document.getElementById('profile-tabs-card');
+  const loginPrompt = document.getElementById('profile-login-prompt');
+
+  if (state.isLoggedIn) {
+    if (earningsCard) earningsCard.style.display = 'flex';
+    if (tabsCard) tabsCard.style.display = 'flex';
+    if (loginPrompt) loginPrompt.style.display = 'none';
+    renderProfileTabsList();
+    setTimeout(renderEarningsChart, 50);
+  } else {
+    if (earningsCard) earningsCard.style.display = 'none';
+    if (tabsCard) tabsCard.style.display = 'none';
+    if (loginPrompt) loginPrompt.style.display = 'flex';
+  }
 }
 
 function renderProfileTabsList() {
@@ -790,9 +826,11 @@ function switchTab(tabId) {
       state.activeProfileTab = 'history';
       document.querySelectorAll('.tab-btn').forEach(btn => {
         if (btn.getAttribute('data-subtab') === 'history') {
-          btn.classList.add('active');
+          btn.classList.remove('font-medium', 'text-slate-400', 'hover:text-slate-200');
+          btn.classList.add('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
         } else {
-          btn.classList.remove('active');
+          btn.classList.remove('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
+          btn.classList.add('font-medium', 'text-slate-400', 'hover:text-slate-200');
         }
       });
     }
@@ -841,9 +879,11 @@ function navigateToProfileTab(subtabId) {
   state.activeProfileTab = subtabId;
   document.querySelectorAll('.tab-btn').forEach(btn => {
     if (btn.getAttribute('data-subtab') === subtabId) {
-      btn.classList.add('active');
+      btn.classList.remove('font-medium', 'text-slate-400', 'hover:text-slate-200');
+      btn.classList.add('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
     } else {
-      btn.classList.remove('active');
+      btn.classList.remove('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
+      btn.classList.add('font-medium', 'text-slate-400', 'hover:text-slate-200');
     }
   });
   renderProfileTabsList();
@@ -1551,8 +1591,12 @@ function bindEvents() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   tabBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      tabBtns.forEach(b => b.classList.remove('active', 'border-b-2', 'border-purple-600', 'text-purple-600'));
-      btn.classList.add('active', 'border-b-2', 'border-purple-600', 'text-purple-600');
+      tabBtns.forEach(b => {
+        b.classList.remove('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
+        b.classList.add('font-medium', 'text-slate-400', 'hover:text-slate-200');
+      });
+      btn.classList.remove('font-medium', 'text-slate-400', 'hover:text-slate-200');
+      btn.classList.add('active', 'font-bold', 'text-purple-400', 'border-b-2', 'border-purple-500');
       state.activeProfileTab = btn.getAttribute('data-subtab');
       renderProfileTabsList();
     });

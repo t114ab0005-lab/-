@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CampusShift (時間變現曆) - 大學生任務互助平台</title>
   <meta name="description" content="專為大學生設計的任務接取與互助平台，包含學術輔導、校園跑腿、技術外包、設計創意等豐富任務。">
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕒</text></svg>">
   <!-- FontAwesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts -->
@@ -47,7 +49,7 @@
       <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-purple-500"></div>
       
       <div class="flex items-center gap-3 mb-8">
-        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(139,92,246,0.4)]">U</div>
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(139,92,246,0.4)]"><i class="fa-solid fa-clock-rotate-left"></i></div>
         <div>
           <h2 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-300">CampusShift</h2>
           <p class="text-xs text-slate-400">時間變現曆</p>
@@ -138,7 +140,7 @@
     <!-- Mobile Top Bar -->
     <div class="md:hidden fixed top-0 left-0 w-full h-16 bg-slate-900/90 backdrop-blur-md border-b border-white/10 z-40 flex items-center justify-between px-4">
       <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-sm shadow-[0_0_10px_rgba(139,92,246,0.4)]">C</div>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white shadow-[0_0_10px_rgba(139,92,246,0.4)]"><i class="fa-solid fa-clock-rotate-left text-sm"></i></div>
         <span class="text-lg font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-300">CampusShift</span>
       </div>
       <button id="mobile-menu-btn" class="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
@@ -153,7 +155,7 @@
     <aside id="main-sidebar" class="w-[280px] bg-slate-900/95 md:bg-slate-900/60 backdrop-blur-md border-r border-white/10 flex flex-col p-6 fixed h-screen z-50 shadow-2xl md:shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-300">
       <div class="flex items-center justify-between mb-12">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white font-black text-xl shadow-[0_0_15px_rgba(139,92,246,0.4)]">C</div>
+          <div class="w-10 h-10 flex-shrink-0 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-500 flex items-center justify-center text-white shadow-[0_0_15px_rgba(139,92,246,0.4)]"><i class="fa-solid fa-clock-rotate-left text-xl"></i></div>
           <span class="text-xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-300 tracking-wide truncate">CampusShift</span>
         </div>
         <button id="mobile-close-btn" class="md:hidden w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-white/10">
@@ -201,9 +203,15 @@
 
       <!-- Top Header -->
       <header class="flex justify-between items-center gap-8">
-        <div>
-          <h1 id="header-main-title" class="text-3xl font-black mb-1 bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 tracking-tight">任務大廳</h1>
-          <p id="header-main-desc" class="text-slate-400 text-sm">瀏覽最新的校園互助任務，接取合適的工作賺取報酬！</p>
+        <div class="flex items-center gap-4">
+          <!-- Logo for Desktop Top Header -->
+          <div class="hidden md:flex w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-cyan-500 items-center justify-center text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+            <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+          </div>
+          <div>
+            <h1 id="header-main-title" class="text-3xl font-black mb-1 bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 tracking-tight">任務大廳</h1>
+            <p id="header-main-desc" class="text-slate-400 text-sm">瀏覽最新的校園互助任務，接取合適的工作賺取報酬！</p>
+          </div>
         </div>
 
         <div class="flex items-center gap-4">
@@ -563,10 +571,10 @@
           </div>
 
           <!-- Right side: History/Active tabs and lists -->
-          <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-6" id="profile-right-panel">
 
             <!-- Earnings Dashboard Card -->
-            <div class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col gap-4">
+            <div id="profile-earnings-card" class="p-6 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col gap-4">
               <div class="flex justify-between items-center flex-wrap gap-4">
                 <div>
                   <h3 class="text-lg font-bold text-white flex items-center gap-2">
@@ -587,15 +595,7 @@
                     </select>
                   </div>
 
-                  <!-- Time Range selector -->
-                  <div class="flex items-center gap-1">
-                    <span class="text-xs text-slate-400">區間:</span>
-                    <select id="chart-range" class="px-2 py-1 bg-slate-800 border border-white/10 rounded-lg text-xs text-white focus:outline-none cursor-pointer">
-                      <option value="week">本週</option>
-                      <option value="month">本月</option>
-                      <option value="all" selected>累計</option>
-                    </select>
-                  </div>
+
 
                   <!-- View Mode selector -->
                   <div class="flex items-center gap-1 border-l border-white/10 pl-3 ml-1">
@@ -648,7 +648,7 @@
             </div>
 
             <!-- Tabs & Lists Container -->
-            <div class="flex flex-col">
+            <div id="profile-tabs-card" class="flex flex-col">
               <div class="flex border-b border-white/10 mb-6">
                 <button class="tab-btn active pb-4 px-6 font-bold text-purple-400 border-b-2 border-purple-500 transition-colors" data-subtab="history">任務歷史紀錄</button>
                 <button class="tab-btn pb-4 px-6 font-medium text-slate-400 hover:text-slate-200 transition-colors" data-subtab="active">進行中工作</button>
@@ -658,6 +658,16 @@
               <div id="profile-history-container" class="space-y-4">
                 <!-- Completed or ongoing tasks history items -->
               </div>
+            </div>
+
+            <!-- Login Prompt Card (Hidden by default) -->
+            <div id="profile-login-prompt" class="hidden p-10 rounded-2xl bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-xl flex flex-col items-center justify-center text-center gap-4">
+              <i class="fa-solid fa-lock text-5xl text-purple-500/50"></i>
+              <h3 class="text-xl font-bold text-white">登入以解鎖專屬數據與紀錄</h3>
+              <p class="text-sm text-slate-400">登入後即可查看您的資金收益分析、任務歷史紀錄與發布任務狀態。</p>
+              <button class="mt-2 px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-400 hover:to-purple-500 transition-all" onclick="openLoginScreen()">
+                前往登入 / 註冊
+              </button>
             </div>
 
           </div>
