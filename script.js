@@ -35,7 +35,7 @@ const AVATAR_OPTIONS = [
 ];
 
 // --- 資料版本控制 (當資料結構更新時，自動清除舊快取) ---
-const DATA_VERSION = "1.3";
+const DATA_VERSION = "1.4";
 
 // --- 系統狀態管理 ---
 let state = {
